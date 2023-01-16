@@ -16,11 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from rest_framework import routers
-from core.views import GroupViewSet, UserViewSet, CategoryViewSet, ExpenseViewSet
+from core.views import GroupViewSet, GroupMemberViewSet, UserViewSet, CategoryViewSet, ExpenseViewSet
 
-router = routers.SimpleRouter()
+router = routers.DefaultRouter()
 router.register(r"groups", GroupViewSet, basename="group")
-router.register(r"groupmembers", GroupViewSet, basename="groupmember")
+router.register(r"groupmembers", GroupMemberViewSet, basename="groupmember")
 router.register(r"users", UserViewSet, basename="user")
 router.register(r"categories", CategoryViewSet, basename="category")
 router.register(r"expenses", ExpenseViewSet, basename="expense")
