@@ -4,10 +4,10 @@ services:
     build:
       context: ./backend
     restart: on-failure
-    command: python manage.py runserver 0.0.0.0:8000
+    command: python manage.py runserver 0.0.0.0:8080
     volumes:
       - ./backend:/backend
     ports:
-      - 8000:8000
+      - 8080:8080
     env_file:
       - .env
