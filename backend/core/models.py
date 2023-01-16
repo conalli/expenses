@@ -23,7 +23,7 @@ class GroupMember(models.Model):
 class Category(models.Model):
     """ Category represents an Expense category """
     title = models.CharField(max_length=50, blank=False)
-    group = models.ForeignKey(Group, on_delete=models.CASCADE, blank=True)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
         return f"{self.title}"
@@ -37,6 +37,8 @@ class Expense(models.Model):
         Category, on_delete=models.SET_NULL, null=True)
     amount = models.IntegerField(blank=False)
     paid = models.BooleanField(default=False)
+    paid_by = models.ForeignKey(
+        GroupMember, on_delete=models.SET_NULL, default=None, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
