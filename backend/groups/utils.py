@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from django.http import QueryDict
 
 
@@ -14,9 +13,9 @@ class ExpenseQueryParamParser:
         y, m, d = query_params.get("year"), query_params.get(
             "month"), query_params.get("day")
         self.pk = pk
-        self.year = int(y) if y != None and y.isnumeric() else 0
-        self.month = self.month_to_int(m) if m != None else 0
-        self.day = int(d) if d != None and d.isnumeric() else 0
+        self.year = int(y) if y is not None and y.isnumeric() else 0
+        self.month = self.month_to_int(m) if m is not None else 0
+        self.day = int(d) if d is not None and d.isnumeric() else 0
 
     def month_to_int(self, month: str) -> int:
         if month == "":

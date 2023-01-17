@@ -44,7 +44,9 @@ INSTALLED_APPS = [
     "django_filters",
     "rest_framework",
 
-    "core"
+    "core",
+    "groups",
+    "expenses",
 
 ]
 
@@ -58,7 +60,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "expenses.urls"
+ROOT_URLCONF = "expensemanager.urls"
 
 TEMPLATES = [
     {
@@ -76,7 +78,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "expenses.wsgi.application"
+WSGI_APPLICATION = "expensemanager.wsgi.application"
 
 
 # Database
