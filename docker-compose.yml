@@ -1,13 +1,27 @@
 version: '3.9'
 services:
   api:
+    container_name: expenses_api
     build:
       context: ./backend
     restart: on-failure
-    command: python manage.py runserver 0.0.0.0:8080
-    volumes:
-      - ./backend:/backend
+    command: python manage.py runserver 0.0.0.0:8000
     ports:
-      - 8080:8080
+      - 8000:8000
+    volumes:
+      - ./backend:/usr/src/backend
+      - static:/usr/src/backend/static
     env_file:
       - .env
+
+  nginx:
+    container_name: expenses_nginx
+    image: nginx:latest
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - static:/usr/share/nginx/html/static
+
+volumes:
+  static:

@@ -2,7 +2,7 @@ FROM python:3.11
 
 ENV PYTHONUNBUFFERED 1
 
-WORKDIR /backend
+WORKDIR /usr/src/backend
 
 COPY ./requirements.txt .
 
@@ -11,4 +11,4 @@ RUN python -m pip install -r requirements.txt
 
 COPY . .
 
-EXPOSE 8080
+EXPOSE 8000
