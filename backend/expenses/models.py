@@ -9,6 +9,7 @@ class Currency(models.Model):
     name = models.CharField(max_length=3, blank=False)
     decimals = models.PositiveSmallIntegerField(
         default=2, validators=[MaxValueValidator(3)])
+    symbol = models.CharField(max_length=1, blank=False)
 
     def __str__(self) -> str:
         return f"{self.name}"
@@ -18,6 +19,7 @@ class Category(models.Model):
     """ Category represents an Expense category """
     title = models.CharField(max_length=50, blank=False)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    public = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return f"{self.title}"

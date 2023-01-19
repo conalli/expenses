@@ -1,5 +1,12 @@
 from rest_framework import serializers
-from .models import Category, Expense
+
+from .models import Category, Currency, Expense
+
+
+class CurrencySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Currency
+        fields = "__all__"
 
 
 class CategorySerializer(serializers.ModelSerializer):
