@@ -1,11 +1,11 @@
 from django.db import transaction
-
 from rest_framework import serializers
+
 from .models import Group, GroupMember, User
 
 
 class GroupSerializer(serializers.ModelSerializer):
-    members = serializers.SerializerMethodField()
+    members = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Group
@@ -16,12 +16,6 @@ class GroupSerializer(serializers.ModelSerializer):
         print("CTX", self.context)
         attrs["members"] = self.context
         return attrs
-
-    def get_members(self, obj):
-        members = GroupMember.objects.filter(group=obj.id)
-        serializer = GroupMemberSerializer(members, many=True)
-        print("SSS", serializer.data)
-        return serializer.data
 
     @transaction.atomic
     def create(self, validated_data):
