@@ -11,11 +11,8 @@ class QueryParamParser:
     month: Optional[int]
     day: Optional[int]
 
-    def __init__(self, query_params: QueryDict):
-        try:
-            self.group = int(query_params.get("group"))
-        except TypeError:
-            raise
+    def __init__(self, pk: int, query_params: QueryDict):
+        self.group = pk
         y, m, d = query_params.get("year"), query_params.get(
             "month"), query_params.get("day")
         self.year = int(y) if y is not None and y.isnumeric() else None
