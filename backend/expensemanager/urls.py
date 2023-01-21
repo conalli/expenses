@@ -19,16 +19,18 @@ from django.urls import include, path
 from expenses.views import CategoryViewSet, CurrencyViewSet, ExpenseViewSet
 from groups.views import GroupMemberViewSet, GroupViewSet
 from rest_framework import routers
+from rest_framework.authtoken import views
 
 router = routers.DefaultRouter()
-router.register(r"users", UserViewSet, basename="user")
-router.register(r"groups", GroupViewSet, basename="group")
-router.register(r"groupmembers", GroupMemberViewSet, basename="groupmember")
-router.register(r"currencies", CurrencyViewSet, basename="currency")
-router.register(r"categories", CategoryViewSet, basename="category")
-router.register(r"expenses", ExpenseViewSet, basename="expense")
+router.register(r"user", UserViewSet, basename="user")
+router.register(r"group", GroupViewSet, basename="group")
+router.register(r"groupmember", GroupMemberViewSet, basename="groupmember")
+router.register(r"currency", CurrencyViewSet, basename="currency")
+router.register(r"category", CategoryViewSet, basename="category")
+router.register(r"expense", ExpenseViewSet, basename="expense")
 
 urlpatterns = [
+    path("api/token", views.obtain_auth_token),
     path("api/admin/", admin.site.urls),
     path("api/", include(router.urls))
 ]
