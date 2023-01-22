@@ -4,16 +4,14 @@ services:
     container_name: expenses_api
     build:
       context: ./backend
+      dockerfile: Dockerfile.dev
     restart: on-failure
     command: python manage.py runserver 0.0.0.0:8000
-    ports:
-      - 8000:8000
     volumes:
       - ./backend:/usr/src/backend
       - static:/usr/src/backend/static
     env_file:
       - .env
-
   nginx:
     container_name: expenses_nginx
     image: nginx:latest
@@ -22,6 +20,10 @@ services:
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - static:/usr/share/nginx/html/static
+
+  redis:
+    container_name: expenses_redis
+    image: redis:latest
 
 volumes:
   static:
