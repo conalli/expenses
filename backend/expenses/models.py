@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator
 from django.db import models
 from django.utils import timezone
@@ -20,6 +21,7 @@ class Category(models.Model):
     title = models.CharField(max_length=50, blank=False)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
     public = models.BooleanField(default=False)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
     def __str__(self) -> str:
         return f"{self.title}"
@@ -28,7 +30,8 @@ class Category(models.Model):
 class Expense(models.Model):
     """ Expense represents a single user expense """
     title = models.CharField(max_length=50, blank=False)
-    description = models.TextField(blank=True)
+    description = models.CharField(max_length=255, blank=True)
+    receipt_url = models.CharField(max_length=255, blank=True, null=True)
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True)
     amount = models.IntegerField(blank=False)
@@ -39,6 +42,7 @@ class Expense(models.Model):
         GroupMember, on_delete=models.SET_NULL, default=None, null=True)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
     date = models.DateField(default=timezone.now)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
