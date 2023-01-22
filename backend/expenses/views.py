@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework import viewsets
 from utils.queryset import default_user_queryset
 
@@ -14,10 +15,17 @@ class CurrencyViewSet(viewsets.ModelViewSet):
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
-    queryset = Category.objects.all()
     serializer_class = CategorySerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_staff:
+            return Category.objects.all()
+        return Category.objects.filter(Q(public=True) | Q(created_by=user))
 
 
 class ExpenseViewSet(viewsets.ModelViewSet):
-    queryset = Expense.objects.all()
     serializer_class = ExpenseSerializer
+
+    def get_queryset(self):
+        return default_user_queryset(self, Expense, "created_by")

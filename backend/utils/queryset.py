@@ -7,7 +7,7 @@ from rest_framework import viewsets
 M = TypeVar("M", bound=Model)
 
 
-def default_user_queryset(viewset: viewsets.GenericViewSet, model: M, filterkey: str, prefetch: Optional[str]) -> BaseManager[M]:
+def default_user_queryset(viewset: viewsets.GenericViewSet, model: M, filterkey: str, prefetch: Optional[str] = None) -> BaseManager[M]:
     user = viewset.request.user
     get_all = model.objects.all()
     f = {filterkey: user}

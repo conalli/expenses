@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User
 from rest_framework import viewsets
-from utils.queryset import default_user_queryset
 
 from .serializers import UserSerializer
 
