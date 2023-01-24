@@ -1,16 +1,10 @@
+from datetime import datetime
+
 import factory
+from core.tests.factories import UserFactory
 
 from ..models.expenses import Category, Currency, Expense
-from ..models.groups import Group, GroupMember, User
-
-
-class UserFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = User
-
-    username = factory.Faker("name")
-    password = "test_password"
-    email = factory.Faker("email")
+from ..models.groups import Group, GroupMember
 
 
 class GroupFactory(factory.django.DjangoModelFactory):
@@ -68,3 +62,4 @@ class ExpenseFactory(factory.django.DjangoModelFactory):
     paid = True
     group = factory.SubFactory(GroupFactory)
     created_by = factory.SubFactory(UserFactory)
+    date = datetime.now()
