@@ -1,7 +1,7 @@
 from django.db import transaction
 from rest_framework import serializers
 
-from .models import Group, GroupMember, User
+from ..models.groups import Group, GroupMember, User
 
 
 class GroupSerializer(serializers.ModelSerializer):

@@ -1,18 +1,18 @@
+from core.utils.queryset import default_user_queryset
 from django.http import Http404
-from expenses.models import Expense
-from expenses.serializers import ExpenseSerializer
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import ParseError, ValidationError
 from rest_framework.parsers import JSONParser
 from rest_framework.request import Request
 from rest_framework.response import Response
-from utils.queryset import default_user_queryset
 
-from .metadata import GroupMetadata
-from .models import Group, GroupMember
-from .serializers import GroupMemberSerializer, GroupSerializer
-from .utils import QueryParamParser
+from ..metadata import GroupMetadata
+from ..models.expenses import Expense
+from ..models.groups import Group, GroupMember
+from ..serializers.expenses import ExpenseSerializer
+from ..serializers.groups import GroupMemberSerializer, GroupSerializer
+from ..utils import QueryParamParser
 
 
 class GroupViewSet(viewsets.ModelViewSet):

@@ -2,18 +2,8 @@ from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator
 from django.db import models
 from django.utils import timezone
-from groups.models import Group, GroupMember
 
-
-class Currency(models.Model):
-    """ Currency represents an expenses currency """
-    name = models.CharField(max_length=3, blank=False)
-    decimals = models.PositiveSmallIntegerField(
-        default=2, validators=[MaxValueValidator(3)])
-    symbol = models.CharField(max_length=1, blank=False)
-
-    def __str__(self) -> str:
-        return f"{self.name}"
+from .groups import Group, GroupMember
 
 
 class Category(models.Model):
@@ -25,6 +15,17 @@ class Category(models.Model):
 
     def __str__(self) -> str:
         return f"{self.title}"
+
+
+class Currency(models.Model):
+    """ Currency represents an expenses currency """
+    name = models.CharField(max_length=3, blank=False)
+    decimals = models.PositiveSmallIntegerField(
+        default=2, validators=[MaxValueValidator(3)])
+    symbol = models.CharField(max_length=1, blank=False)
+
+    def __str__(self) -> str:
+        return f"{self.name}: {self.symbol}"
 
 
 class Expense(models.Model):
@@ -47,4 +48,4 @@ class Expense(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
-        return f"{self.title} - ¥{self.amount}"
+        return f"{self.title}: {self.amount}"

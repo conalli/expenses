@@ -1,11 +1,11 @@
+from core.utils.queryset import default_user_queryset
 from django.db.models import Q
 from rest_framework import viewsets
-from utils.queryset import default_user_queryset
 
-from .models import Category, Currency, Expense
-from .permissions import IsAdminOrReadOnly
-from .serializers import (CategorySerializer, CurrencySerializer,
-                          ExpenseSerializer)
+from ..models.expenses import Category, Currency, Expense
+from ..permissions import IsAdminOrReadOnly
+from ..serializers.expenses import (CategorySerializer, CurrencySerializer,
+                                    ExpenseSerializer)
 
 
 class CurrencyViewSet(viewsets.ModelViewSet):

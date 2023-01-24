@@ -16,8 +16,9 @@ Including another URLconf
 from core.views import SignUp, UserViewSet
 from django.contrib import admin
 from django.urls import include, path
-from expenses.views import CategoryViewSet, CurrencyViewSet, ExpenseViewSet
-from groups.views import GroupMemberViewSet, GroupViewSet
+from expenses.views.expenses import (CategoryViewSet, CurrencyViewSet,
+                                     ExpenseViewSet)
+from expenses.views.groups import GroupMemberViewSet, GroupViewSet
 from rest_framework import routers
 from rest_framework.authtoken import views
 
@@ -25,8 +26,8 @@ router = routers.DefaultRouter()
 router.register(r"user", UserViewSet, basename="user")
 router.register(r"group", GroupViewSet, basename="group")
 router.register(r"groupmember", GroupMemberViewSet, basename="groupmember")
-router.register(r"currency", CurrencyViewSet, basename="currency")
 router.register(r"category", CategoryViewSet, basename="category")
+router.register(r"currency", CurrencyViewSet, basename="currency")
 router.register(r"expense", ExpenseViewSet, basename="expense")
 
 urlpatterns = [
