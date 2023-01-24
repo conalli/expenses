@@ -8,10 +8,10 @@ logger = get_task_logger(__name__)
 
 
 @app.task(bind=True)
-def send_newuser_email(self, username: str, email: str, **kwargs: dict):
-    logger.info("SEND_EMAIL " + username + email)
-    subject = "Welcome, " + username + " !"
+def send_newuser_email(self, username: str, email: str):
+    logger.info(f"SEND_EMAIL {username} - {email}")
+    subject = f"Welcome, {username}!"
     message = render_to_string(
         "core/newuser.html", {"username": username})
     send_mail(subject, message,
-              settings.DEFAULT_FROM_EMAIL, [email], fail_silently=False, html_message=message)
+              settings.DEFAULT_FROM_EMAIL, [email], False, html_message=message)
