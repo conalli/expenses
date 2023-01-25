@@ -17,6 +17,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class SignUp(APIView):
     permission_classes = [AllowAny]
+    serializer_class = UserSerializer
 
     def post(self, request: Request):
         data = JSONParser().parse(request)
