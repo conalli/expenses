@@ -23,7 +23,7 @@ curl -X POST 'localhost/api/signup/' \
 }'
 ```
 
-- Hit the /api/token endpoint with the same data to get your user token, supply this as an ``` Authorization: Token <yourtoken> ``` header on subsequent requests.
+- Hit the /api/token/ endpoint with the same data to get your user token, supply this as an ``` Authorization: Token <yourtoken> ``` header on subsequent requests.
 
 ## To Get Started With Development
 
