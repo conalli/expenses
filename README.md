@@ -29,7 +29,7 @@ curl -X POST 'localhost/api/signup/' \
 
 The easiest way to get started is to ```cd``` in to the backend directory and run ``` make ```. This will build the containers and start the server and celery in detached mode.
 
-If you would like to check the logs from the terminal, open three terminals and in one terminal run:
+If you would like to check the logs from the terminal, open three terminals and in them run:
 
 - ``` make build ```, ``` make up ```
 - ``` make celery_worker ```
