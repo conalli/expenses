@@ -42,3 +42,4 @@ This should allow you to view the output from celery and celery beat.
 - Frontend Mobile app (React Native)
 - Implement receipt uploading to s3.
 - Add styling to emails.
+- Update backend auth.

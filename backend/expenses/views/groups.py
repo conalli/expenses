@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 from ..metadata import GroupMetadata
 from ..models.expenses import Expense
-from ..models.groups import Group, GroupMember
+from ..models.groups import Group, GroupMember, User
 from ..serializers.expenses import ExpenseSerializer
 from ..serializers.groups import GroupMemberSerializer, GroupSerializer
 from ..utils import QueryParamParser
@@ -30,19 +30,15 @@ class GroupViewSet(viewsets.ModelViewSet):
             raise Http404
 
     def create(self, request: Request) -> Response:
-        """ /groups POST request creates a new group """
+        """ /group/ POST request creates a new group """
         try:
             data = JSONParser().parse(request)
-            print("RE", data)
-            req_user = data.pop("members")
-            print(dict(req_user[0]))
-            data["members"] = [dict(req_user[0])]
             serializer = GroupSerializer(
-                data=data, partial=True, context=dict(req_user[0]))
+                data=data, partial=True, context={"owner": request.user})
             if not serializer.is_valid(raise_exception=True):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         except ParseError as err:
             print("Parse Err:", err.get_full_details())
             return Response({"result": "error", "description": "could not parse request"}, status=status.HTTP_400_BAD_REQUEST)
@@ -52,12 +48,14 @@ class GroupViewSet(viewsets.ModelViewSet):
 
     @action(detail=True)
     def members(self, _request: Request, pk: int) -> Response:
+        """ /group/{id}/members GET lists the members of a given group """
         members = GroupMember.objects.filter(group=pk)
         serializer = GroupMemberSerializer(members, many=True)
         return Response(serializer.data)
 
     @action(detail=True)
     def expenses(self, request: Request, pk: int) -> Response:
+        """ /group/{id}/expenses GET lists the expenses of a given group """
         query = request.query_params
         expense_filter = QueryParamParser(pk, query).to_filter()
         expenses = Expense.objects.filter(**expense_filter)
@@ -70,3 +68,13 @@ class GroupMemberViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return default_user_queryset(self, GroupMember, "user", None)
+
+    def create(self, request: Request):
+        """ /groupmember/ POST creates a new member for given group and user """
+        data = JSONParser().parse(request)
+        serializer = GroupMemberSerializer(
+            data=data, context={"user": request.user})
+        if not serializer.is_valid(raise_exception=True):
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

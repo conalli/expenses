@@ -20,6 +20,7 @@ class SignUp(APIView):
     serializer_class = UserSerializer
 
     def post(self, request: Request):
+        """ /signup/ POST endpoint creates a new user """
         data = JSONParser().parse(request)
         serializer = UserSerializer(data=data, partial=True)
         if not serializer.is_valid(raise_exception=True):
