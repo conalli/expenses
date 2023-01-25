@@ -1,6 +1,4 @@
-from dataclasses import dataclass
 from datetime import datetime
-from functools import reduce
 from typing import List, NewType
 
 from dateutil.relativedelta import relativedelta
@@ -11,7 +9,7 @@ from .models.expenses import Category, Currency, Expense
 from .models.groups import GroupMember
 
 # ReportResults represents a dict of Category titles with a dict of Currency -> total expense amount
-ReportResults = NewType("ReportResults", dict[str, dict[str, float]])
+ReportResults = NewType("ReportResults", dict[str, dict[str, int | float]])
 
 
 class Report:
@@ -48,13 +46,17 @@ class Report:
         currency = self.currencies[expense.currency.pk]
         category_id = expense.category.pk
         category_title = self.categories[category_id].title if category_id is not None else "Misc."
-        amount_divisor = 1 if currency.decimals == 0 else 10 ** currency.decimals
+        amount_divisor = None if currency.decimals == 0 else 10 ** currency.decimals
+        amount = (expense.amount /
+                  amount_divisor) if amount_divisor is not None else expense.amount
         if category_title in self.report_totals:
-            self.report_totals[category_title][currency.name] = self.report_totals[category_title].get(
-                currency.name, 0) + (expense.amount / amount_divisor)
+            self.report_totals[category_title][currency.symbol] = self.report_totals[category_title].get(
+                currency.symbol, 0) + amount
         else:
-            expense_amount = {currency.name: (expense.amount / amount_divisor)}
-            self.report_totals[category_title] = expense_amount
+            self.report_totals[category_title] = {currency.symbol: amount}
+
+    def get_members(self) -> List[GroupMember]:
+        return [member for member in self.group_members]
 
 
 def map_currencies() -> dict[int, Currency]:

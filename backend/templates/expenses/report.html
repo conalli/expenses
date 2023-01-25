@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <h1>Time for this months report for {{group}}.</h1>
+        <ul>
+            {% for category, totals in data.items %}
+                <li>
+                    <h3>{{category}}</h3>
+                    <ul>
+                        {% for symbol, amount in totals.items %}
+                        <li><p>{{symbol}}{{amount}}</p></li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+    </body>
+</html>

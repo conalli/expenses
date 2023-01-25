@@ -35,9 +35,9 @@ class Expense(models.Model):
     receipt_url = models.CharField(max_length=255, blank=True, null=True)
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True)
-    amount = models.IntegerField(blank=False)
     currency = models.ForeignKey(
         Currency, on_delete=models.SET_NULL, null=True)
+    amount = models.IntegerField(blank=False, default=0)
     paid = models.BooleanField(default=False)
     paid_by = models.ForeignKey(
         GroupMember, on_delete=models.SET_NULL, default=None, null=True)

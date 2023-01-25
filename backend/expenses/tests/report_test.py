@@ -6,7 +6,6 @@ from core.tests.factories import UserFactory
 from dateutil.relativedelta import relativedelta
 from django.db.models import signals
 
-from ..models.expenses import Expense
 from ..models.groups import Group
 from ..report import Report, get_prev_month, map_currencies
 from .factories import (CategoryFactory, CurrencyFactory, ExpenseFactory,
@@ -51,8 +50,8 @@ class TestReport:
         got = report.create_monthly_report()
         print("REPORT", prev_month)
         want = {
-            "Food": {"JPY": 14000.0, "USD": 40.0},
-            "Gas": {"JPY": 3000.0}
+            "Food": {"¥": 14000.0, "$": 40.0},
+            "Gas": {"¥": 3000.0}
         }
         assert want == got
 

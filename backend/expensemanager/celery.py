@@ -1,6 +1,7 @@
 import os
 
 from celery import Celery
+from celery.schedules import crontab
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "expensemanager.settings")
 
@@ -10,8 +11,8 @@ app.autodiscover_tasks()
 
 
 app.conf.beat_schedule = {
-    "debug-every-30-seconds": {
-        "task": "core.tasks.debug_task",
-        "schedule": 30.0,
+    "send-monthly-report": {
+        "task": "expenses.tasks.send",
+        "schedule": crontab(minute=0, hour=0, day_of_month=1)
     }
 }
