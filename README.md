@@ -23,13 +23,13 @@ curl -X POST 'localhost/api/signup/' \
 }'
 ```
 
-- Hit the /api/token endpoint with the same data to get your user token, supply this as an ``` Authorization: Token <yourtoken> ``` header on subsequent requests.
+- Hit the /api/token/ endpoint with the same data to get your user token, supply this as an ``` Authorization: Token <yourtoken> ``` header on subsequent requests.
 
 ## To Get Started With Development
 
 The easiest way to get started is to ```cd``` in to the backend directory and run ``` make ```. This will build the containers and start the server and celery in detached mode.
 
-If you would like to check the logs from the terminal, open three terminals and in one terminal run:
+If you would like to check the logs from the terminal, open three terminals and in them run:
 
 - ``` make build ```, ``` make up ```
 - ``` make celery_worker ```
@@ -39,4 +39,6 @@ This should allow you to view the output from celery and celery beat.
 
 ## Future Features
 
+- Frontend Mobile app (React Native)
 - Implement receipt uploading to s3.
+- Add styling to emails.
