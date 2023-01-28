@@ -6,8 +6,11 @@ from core.tests.factories import UserFactory
 from dateutil.relativedelta import relativedelta
 from django.db.models import signals
 
-from ..models.groups import Group
-from ..report import Report, get_prev_month, map_currencies
+from ..models import Group
+from ..reports.generator import (REPORT_TYPE_MONTHLY, REPORT_TYPE_YEARLY,
+                                 MonthlyReport, YearlyReport)
+from ..reports.report import Report, map_currencies
+from ..reports.types import ReportType
 from .factories import (CategoryFactory, CurrencyFactory, ExpenseFactory,
                         GroupFactory, GroupMemberFactory)
 
@@ -39,24 +42,26 @@ class TestReport:
                        currency=currency_usd, created_by=user, date=last_month_date, group=group)
         ExpenseFactory(title="gas", amount=3000, category=category_gas,
                        currency=currency_jpy, created_by=user, date=last_month_date, group=group)
-        return {"group_name": group.name, "date": last_month_date}
+        return {"group_name": group.name}
 
     def test_monthly_report(self, report_data):
         new_group = Group.objects.get(name=report_data["group_name"])
         currencies = map_currencies()
-        prev_month = report_data["date"].month
-        report = Report(new_group.pk, prev_month,
-                        currencies)
-        got = report.create_monthly_report()
-        print("REPORT", prev_month)
+        report = Report(REPORT_TYPE_MONTHLY).generate(new_group.pk, currencies)
         want = {
             "Food": {"¥": 14000.0, "$": 40.0},
             "Gas": {"¥": 3000.0}
         }
-        assert want == got
+        assert want == report.data
 
+    def test_get_emails(self, report_data):
+        new_group = Group.objects.get(name=report_data["group_name"])
+        currencies = map_currencies()
+        report = Report(REPORT_TYPE_MONTHLY).generate(new_group.pk, currencies)
+        emails = report.emails
+        assert len(emails) == 1
+        assert emails[0] == "reporttest@report.test"
 
-class TestMapCurrencies:
     def test_map_currencies(self):
         usd = CurrencyFactory(name="USD", decimals=2, symbol="$")
         jpy = CurrencyFactory(name="JPY", decimals=0, symbol="¥")
@@ -65,7 +70,22 @@ class TestMapCurrencies:
         assert got[2] == jpy
 
 
-class TestGetPrevMonth:
-    def test_get_prev_month(self):
-        this_month = datetime.now().month
-        assert this_month - 1 == (0 if this_month == 1 else get_prev_month())
+class TestGenerator:
+    def test_get_generator_returns_monthly_report(self) -> None:
+        variant_literal, variant_str = REPORT_TYPE_MONTHLY, "Monthly"
+        assert isinstance(
+            ReportType.get_generator(variant_literal), MonthlyReport)
+        assert isinstance(
+            ReportType.get_generator(variant_str), MonthlyReport)
+
+    def test_get_generator_returns_yearly_report(self) -> None:
+        variant_literal, variant_str = REPORT_TYPE_YEARLY, "Yearly"
+        assert isinstance(
+            ReportType.get_generator(variant_literal), YearlyReport)
+        assert isinstance(
+            ReportType.get_generator(variant_str), YearlyReport)
+
+    def test_get_generator_raises_valueerror(self) -> None:
+        non_variant = "Testy"
+        with pytest.raises(ValueError):
+            ReportType.get_generator(non_variant)
