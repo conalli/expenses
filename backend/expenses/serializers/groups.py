@@ -1,10 +1,9 @@
-from typing import List
-
 from core.utils.token import token_generator
+from django.contrib.auth.models import User
 from django.db import transaction
 from rest_framework import serializers
 
-from ..models.groups import Group, GroupMember, User
+from ..models import Group, GroupMember
 
 
 class GroupSerializer(serializers.ModelSerializer):
@@ -16,7 +15,7 @@ class GroupSerializer(serializers.ModelSerializer):
         extra_kwargs = {"members": {"read_only": True}}
         depth = 1
 
-    def validate(self, data: dict[str, str | List[User]]):
+    def validate(self, data: dict[str, str | list[User]]):
         if "name" not in data or len(data["name"]) == 0 or len(data["name"]) > 50:
             raise serializers.ValidationError(
                 "Group name must be between 1 and 50 characters long")

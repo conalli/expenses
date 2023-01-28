@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from ..models.expenses import Category, Currency, Expense
+from ..models import Category, Currency, Expense
 
 
 class CurrencySerializer(serializers.ModelSerializer):

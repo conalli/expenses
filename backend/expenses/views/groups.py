@@ -8,8 +8,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from ..metadata import GroupMetadata
-from ..models.expenses import Expense
-from ..models.groups import Group, GroupMember, User
+from ..models import Expense, Group, GroupMember
 from ..serializers.expenses import ExpenseSerializer
 from ..serializers.groups import GroupMemberSerializer, GroupSerializer
 from ..utils import QueryParamParser
@@ -31,6 +30,7 @@ class GroupViewSet(viewsets.ModelViewSet):
 
     def create(self, request: Request) -> Response:
         """ /group/ POST request creates a new group """
+        serializer = GroupSerializer
         try:
             data = JSONParser().parse(request)
             serializer = GroupSerializer(

@@ -3,8 +3,7 @@ from datetime import datetime
 import factory
 from core.tests.factories import UserFactory
 
-from ..models.expenses import Category, Currency, Expense
-from ..models.groups import Group, GroupMember
+from ..models import Category, Currency, Expense, Group, GroupMember
 
 
 class GroupFactory(factory.django.DjangoModelFactory):

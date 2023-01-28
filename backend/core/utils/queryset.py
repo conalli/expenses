@@ -4,10 +4,8 @@ from django.db.models import Model
 from django.db.models.manager import BaseManager
 from rest_framework import viewsets
 
-M = TypeVar("M", bound=Model)
 
-
-def default_user_queryset(viewset: viewsets.GenericViewSet, model: M, filterkey: str, prefetch: Optional[str] = None) -> BaseManager[M]:
+def default_user_queryset(viewset: viewsets.GenericViewSet, model: Model, filterkey: str, prefetch: Optional[str] = None) -> BaseManager[Model]:
     user = viewset.request.user
     get_all = model.objects.all()
     f = {filterkey: user}
