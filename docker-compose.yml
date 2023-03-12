@@ -3,7 +3,7 @@ services:
   api:
     container_name: expenses_api
     build:
-      context: ./backend
+      context: ./api
       dockerfile: Dockerfile.dev
     restart: on-failure
     command: python manage.py runserver 0.0.0.0:8000
@@ -12,6 +12,17 @@ services:
       - static:/usr/src/backend/static
     env_file:
       - .env
+
+  receipts:
+    container_name: expenses_receipts
+    build:
+      context: ./receipts
+      dockerfile: Dockerfile.dev
+    restart: on-failure
+    command: python app.py
+    env_file:
+      - .env
+
   nginx:
     container_name: expenses_nginx
     image: nginx:latest
