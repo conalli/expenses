@@ -8,8 +8,8 @@ services:
     restart: on-failure
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - ./backend:/usr/src/backend
-      - static:/usr/src/backend/static
+      - ./api:/usr/src/api
+      - static:/usr/src/api/static
     env_file:
       - .env
 
