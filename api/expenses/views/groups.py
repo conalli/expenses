@@ -1,4 +1,6 @@
 from core.utils.queryset import default_user_queryset
+from django.db.models import Model
+from django.db.models.manager import BaseManager
 from django.http import Http404
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -19,7 +21,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     serializer_class = GroupSerializer
     metadata_class = GroupMetadata
 
-    def get_queryset(self):
+    def get_queryset(self) -> BaseManager[Model]:
         return default_user_queryset(self, Group, "members", "members")
 
     def get_group(self, pk: int) -> Group:
