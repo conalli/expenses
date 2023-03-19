@@ -17,7 +17,7 @@ app.wsgi_app = ProxyFix(
 
 
 @app.route("/receipts", methods=["POST"])
-def save_and_parse_receipt() -> None:
+def save_and_parse_receipt():
     receipt = request.files.get("receipt")
     if not receipt:
         return (None, 400)
