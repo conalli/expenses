@@ -6,8 +6,12 @@ WORKDIR /usr/src/receipts
 
 COPY ./requirements.txt .
 
+RUN apt-get -y update && apt-get -y upgrade
+RUN apt-get -y install tesseract-ocr
+
 RUN pip install --upgrade pip
 RUN python -m pip install -r requirements.txt
+
 
 COPY . .
 
