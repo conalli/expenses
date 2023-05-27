@@ -1,10 +1,14 @@
 import os
-from uuid import uuid4
 
-import boto3
+# import boto3
 from dotenv import load_dotenv
 from flask import Flask, request
+from parse.image import parse_image
+from PIL import Image
 from werkzeug.middleware.proxy_fix import ProxyFix
+
+# from uuid import uuid4
+
 
 load_dotenv()
 
@@ -21,13 +25,16 @@ def save_and_parse_receipt():
     receipt = request.files.get("receipt")
     if not receipt:
         return (None, 400)
-    receipt_id = str(uuid4())
-    s3 = boto3.resource("s3",
-                        aws_access_key_id=os.environ.get("AWS_ACCESS_ID"),
-                        aws_secret_access_key=os.environ.get("AWS_ACCESS_KEY"))
-    s3.meta.client.upload_fileobj(
-        receipt, os.environ.get("S3_BUCKET_NAME"), receipt_id)
-    return {"id": receipt_id}
+    image = Image.open(receipt)
+    print(parse_image(image))
+    return (None, 200)
+    # receipt_id = str(uuid4())
+    # s3 = boto3.resource("s3",
+    #                     aws_access_key_id=os.environ.get("AWS_ACCESS_ID"),
+    #                     aws_secret_access_key=os.environ.get("AWS_ACCESS_KEY"))
+    # s3.meta.client.upload_fileobj(
+    #     receipt, os.environ.get("S3_BUCKET_NAME"), receipt_id)
+    # return {"id": receipt_id}
 
 
 def get_port():

@@ -8,7 +8,6 @@ COPY ./requirements.txt .
 
 RUN apt-get -y update && apt-get -y upgrade
 RUN apt-get -y install tesseract-ocr
-RUN apt-get -y install tesseract-ocr-jpn
 
 RUN pip install --upgrade pip
 RUN python -m pip install -r requirements.txt
@@ -17,3 +16,5 @@ RUN python -m pip install -r requirements.txt
 COPY . .
 
 EXPOSE 8001
+
+CMD ["python", "-m", "app"]
