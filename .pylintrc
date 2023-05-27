@@ -1,5 +1,6 @@
 [MASTER]
-load-plugins=pylint_django
+ignore=nginx, frontend, receipts
+load-plugins=pylint_django, pylint_flask
 django-settings-module=myproject.settings
 
 [FORMAT]

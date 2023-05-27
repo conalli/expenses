@@ -19,7 +19,7 @@ services:
       context: ./receipts
       dockerfile: Dockerfile.dev
     restart: on-failure
-    command: python -m app.py
+    command: python -m app
     volumes:
       - ./receipts:/usr/src/receipts
     env_file:
