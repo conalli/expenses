@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AuthResponse } from "../Auth";
-import { Group, User, userFromAuthResponse } from "./User";
+import { Group, User, userFromAuthResponse } from "./models";
 
 const getLocalUser = (): AuthResponse | null => {
   const userData = window.localStorage.getItem("EXPENSES_USER");
@@ -30,23 +30,26 @@ export default function useUser() {
     const data = getLocalUser();
     if (!data) window.location.assign("/");
     else {
-      const addGroupToUser = async () => {
+      const addGroupToUser = async (res: AuthResponse) => {
         try {
-          const groups = await getGroups(data.token);
+          const groups = await getGroups(res.token);
+          const filteredGroups = groups.map((g) => {
+            const members = g.members.filter((m) => m.id !== res.user_id);
+            return { ...g, members } as Group;
+          });
+          console.log(filteredGroups);
           setUser((prev) => {
-            if (!prev) return { groups } as User;
-            else return { ...prev, groups };
+            if (!prev) return { groups: filteredGroups } as User;
+            else return { ...prev, groups: filteredGroups };
           });
         } catch (error) {
           console.error(error);
         }
       };
-      addGroupToUser();
       setUser(userFromAuthResponse(data as AuthResponse));
+      addGroupToUser(data);
     }
   }, [user]);
-
-  console.log("USER", user);
 
   return { user };
 }
