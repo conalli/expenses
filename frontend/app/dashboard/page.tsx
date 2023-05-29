@@ -1,10 +1,10 @@
 "use client";
 
+import { GroupDetails } from "@/components/groups/GroupDetails";
+import { GroupList } from "@/components/groups/GroupList";
+import { useUser } from "@/hooks/useUser";
+import { Group } from "@/lib/models";
 import { useState } from "react";
-import GroupDetails from "./(group)/GroupDetails";
-import GroupList from "./(group)/GroupList";
-import { Group } from "./models";
-import useUser from "./useUser";
 
 export default function Dashboard() {
   const { user } = useUser();
@@ -16,7 +16,7 @@ export default function Dashboard() {
   if (!user) return null;
   return (
     <main className="min-h-screen">
-      <div className="grid grid-cols-4">
+      <div className="grid grid-cols-5">
         <div className="col-start-1">
           <GroupList
             groups={user.groups}
@@ -24,7 +24,7 @@ export default function Dashboard() {
             selectGroup={handleSelectGroup}
           />
         </div>
-        <div className="col-span-3">
+        <div className="col-start-3 col-span-2 p-8">
           <GroupDetails group={selectedGroup} token={user.token} />
         </div>
       </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { Expense } from "../models";
+import { Expense } from "../../lib/models";
 
 const amountToCurrency = (amount: number, decimals: number): string => {
   const total = amount / 10 ** decimals;
@@ -33,14 +33,14 @@ export const columns: ColumnDef<Expense>[] = [
     ),
   },
   {
+    accessorFn: (row) => row.category.title,
+    header: "Category",
+  },
+  {
     accessorFn: (row) =>
       new Intl.DateTimeFormat(["ja-JP"], {
         dateStyle: "short",
       }).format(new Date(row.date)),
     header: "Date",
-  },
-  {
-    accessorFn: (row) => row.category.title,
-    header: "Category",
   },
 ];

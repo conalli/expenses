@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { AuthResponse } from "../Auth";
-import { Group, User, userFromAuthResponse } from "./models";
+import { AuthResponse } from "../components/auth/Auth";
+import { Group, User, userFromAuthResponse } from "../lib/models";
 
 const getLocalUser = (): AuthResponse | null => {
   const userData = window.localStorage.getItem("EXPENSES_USER");
@@ -22,7 +22,7 @@ const getGroups = async (token: string): Promise<Group[]> => {
   return response.json() as Promise<Group[]>;
 };
 
-export default function useUser() {
+export function useUser() {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {

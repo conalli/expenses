@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Expense, Group } from "../models";
-import ExpenseTable from "./ExpenseTable";
+import { Expense, Group } from "../../lib/models";
+import { ExpenseTable } from "../expenses/ExpenseTable";
 
 const getGroupExpenses = async (
   token: string,
@@ -15,7 +15,7 @@ const getGroupExpenses = async (
   return response.json() as Promise<Expense[]>;
 };
 
-export default function GroupDetails({
+export function GroupDetails({
   group,
   token,
 }: {

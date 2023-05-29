@@ -1,7 +1,8 @@
-import { AuthResponse } from "../Auth";
+import { AuthResponse } from "../components/auth/Auth";
 
 export type User = {
   id: number;
+  username: string;
   email: string;
   token: string;
   groups?: Group[];
