@@ -37,7 +37,6 @@ export function useUser() {
             const members = g.members.filter((m) => m.id !== res.user_id);
             return { ...g, members } as Group;
           });
-          console.log(filteredGroups);
           setUser((prev) => {
             if (!prev) return { groups: filteredGroups } as User;
             else return { ...prev, groups: filteredGroups };

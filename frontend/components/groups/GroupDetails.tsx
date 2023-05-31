@@ -19,15 +19,13 @@ export function GroupDetails({
   group,
   token,
 }: {
-  group: Group | null;
+  group: Group;
   token: string;
 }) {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   useEffect(() => {
-    if (!group) return;
     getGroupExpenses(token, group.id).then((data) => setExpenses(data));
   }, [group, token]);
-  if (!group) return null;
   return (
     <div>
       {expenses.length > 0 ? <ExpenseTable expenses={expenses} /> : null}

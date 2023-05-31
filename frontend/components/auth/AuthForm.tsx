@@ -33,7 +33,11 @@ const formSchema = z.object({
     .max(50),
 });
 
-export default function AuthForm() {
+export default function AuthForm({
+  variant,
+}: {
+  variant: "Sign in" | "Sign up";
+}) {
   const form = useForm<AuthRequest>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -45,7 +49,25 @@ export default function AuthForm() {
 
   const router = useRouter();
 
-  const onSubmit = async (values: AuthRequest) => {
+  const onSignUpSubmit = async (values: AuthRequest) => {
+    try {
+      const response = await fetch("/api/signup/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+      if (response.status === 200) {
+        router.push("/signin");
+      }
+    } catch (error) {
+      console.error(error);
+      form.reset();
+    }
+  };
+
+  const onSignInSubmit = async (values: AuthRequest) => {
     try {
       const response = await fetch("/api/token/", {
         method: "POST",
@@ -65,57 +87,62 @@ export default function AuthForm() {
     }
   };
 
+  const onSubmit = variant === "Sign in" ? onSignInSubmit : onSignUpSubmit;
+
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="username"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Username</FormLabel>
-              <FormControl>
-                <Input placeholder="username" {...field} />
-              </FormControl>
-              <FormDescription>
-                This is your public display name.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input placeholder="email" type="email" {...field} />
-              </FormControl>
-              <FormDescription>Your email address.</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <Input placeholder="********" type="password" {...field} />
-              </FormControl>
-              <FormDescription>
-                Your password (must be over 6 characters).
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit">Sign In</Button>
-      </form>
-    </Form>
+    <div>
+      <h1 className="font-bold text-2xl py-8">{variant}</h1>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <FormField
+            control={form.control}
+            name="username"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Username</FormLabel>
+                <FormControl>
+                  <Input placeholder="username" {...field} />
+                </FormControl>
+                <FormDescription>
+                  This is your public display name.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input placeholder="email" type="email" {...field} />
+                </FormControl>
+                <FormDescription>Your email address.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input placeholder="********" type="password" {...field} />
+                </FormControl>
+                <FormDescription>
+                  Your password (must be over 6 characters).
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type="submit">{variant}</Button>
+        </form>
+      </Form>
+    </div>
   );
 }

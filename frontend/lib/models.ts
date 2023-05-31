@@ -5,13 +5,19 @@ export type User = {
   username: string;
   email: string;
   token: string;
-  groups?: Group[];
+  groups: Group[];
+};
+
+export type GroupMember = {
+  id: number;
+  username: string;
+  email: string;
 };
 
 export type Group = {
   id: number;
   name: string;
-  members: User[];
+  members: GroupMember[];
 };
 
 export type Currency = {

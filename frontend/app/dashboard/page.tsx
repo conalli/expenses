@@ -8,14 +8,14 @@ import { useState } from "react";
 
 export default function Dashboard() {
   const { user } = useUser();
-  const [selectedGroup, setSelectedGroup] = useState<Group>({} as Group);
+  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
 
   const handleSelectGroup = (group: Group): void => {
     setSelectedGroup(group);
   };
   if (!user) return null;
   return (
-    <main className="min-h-screen">
+    <main className="">
       <div className="grid grid-cols-5">
         <div className="col-start-1">
           <GroupList
@@ -25,7 +25,9 @@ export default function Dashboard() {
           />
         </div>
         <div className="col-start-3 col-span-2 p-8">
-          <GroupDetails group={selectedGroup} token={user.token} />
+          {selectedGroup && (
+            <GroupDetails group={selectedGroup} token={user.token} />
+          )}
         </div>
       </div>
     </main>

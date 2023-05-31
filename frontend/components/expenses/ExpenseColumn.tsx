@@ -1,25 +1,41 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import { MoreHorizontal } from "lucide-react";
 import { Expense } from "../../lib/models";
+import { Button } from "../ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 const amountToCurrency = (amount: number, decimals: number): string => {
   const total = amount / 10 ** decimals;
   return total.toFixed(decimals);
 };
 
-const displayAmount = (symbol: string, currencyAmount: string) => {
+const displayAmount = (symbol: string, currencyAmount: string): string => {
   return `${symbol}${currencyAmount}`;
+};
+
+const formatServerDate = (date: string): string => {
+  return new Intl.DateTimeFormat(["ja-JP"], {
+    dateStyle: "short",
+  }).format(new Date(date));
 };
 
 export const columns: ColumnDef<Expense>[] = [
   {
-    accessorKey: "title",
     header: "Title",
+    accessorKey: "title",
   },
   {
-    accessorKey: "description",
     header: "Description",
+    accessorKey: "description",
   },
   {
     header: "Amount",
@@ -33,14 +49,39 @@ export const columns: ColumnDef<Expense>[] = [
     ),
   },
   {
-    accessorFn: (row) => row.category.title,
     header: "Category",
+    accessorFn: (row) => row.category.title,
   },
   {
-    accessorFn: (row) =>
-      new Intl.DateTimeFormat(["ja-JP"], {
-        dateStyle: "short",
-      }).format(new Date(row.date)),
     header: "Date",
+    accessorFn: (row) => formatServerDate(row.date),
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      const expense = row.original;
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuItem onClick={() => console.log("hi", expense.title)}>
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => console.log("bye", expense.description)}
+            >
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
   },
 ];
