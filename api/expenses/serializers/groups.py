@@ -1,3 +1,4 @@
+from core.serializers import GroupUserSerializer
 from core.utils.token import token_generator
 from django.contrib.auth.models import User
 from django.db import transaction
@@ -6,14 +7,36 @@ from rest_framework import serializers
 from ..models import Group, GroupMember
 
 
+class GroupMemberSerializer(serializers.ModelSerializer):
+    user = GroupUserSerializer()
+
+    class Meta:
+        model = GroupMember
+        fields = "__all__"
+        extra_kwargs = {"verified": {"read_only": True},
+                        "verification_code": {"read_only": True}}
+        depth = 1
+
+    def validate_group(self, value):
+        if GroupMember.objects.get(group=value, user=self.context.get("user")) is None:
+            raise serializers.ValidationError(
+                "Cannot add new member to non-member group")
+        return value
+
+    def create(self, validated_data) -> GroupMember:
+        code = token_generator.make_token(validated_data.get("user"))
+        new_member_data = {"group": validated_data.get("group"),
+                           "user": validated_data.get("user"), "verification_code": code}
+        return GroupMember.objects.create(**new_member_data)
+
+
 class GroupSerializer(serializers.ModelSerializer):
-    members = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    members = GroupUserSerializer(many=True)
 
     class Meta:
         model = Group
-        fields = ["id", "name", "members"]
+        fields = "__all__"
         extra_kwargs = {"members": {"read_only": True}}
-        depth = 1
 
     def validate(self, data: dict[str, str | list[User]]):
         if "name" not in data or len(data["name"]) == 0 or len(data["name"]) > 50:
@@ -31,28 +54,3 @@ class GroupSerializer(serializers.ModelSerializer):
         group_owner = GroupMember.objects.create(**owner)
         group.members.set([group_owner.user.id])
         return group
-
-
-class GroupMemberSerializer(serializers.ModelSerializer):
-    group = serializers.PrimaryKeyRelatedField(
-        read_only=False, queryset=Group.objects.all())
-    user = serializers.PrimaryKeyRelatedField(
-        read_only=False, queryset=User.objects.all())
-
-    class Meta:
-        model = GroupMember
-        fields = ["id", "verified", "verification_code", "group", "user"]
-        extra_kwargs = {"verified": {"read_only": True},
-                        "verification_code": {"read_only": True}}
-
-    def validate_group(self, value):
-        if GroupMember.objects.get(group=value, user=self.context.get("user")) is None:
-            raise serializers.ValidationError(
-                "Cannot add new member to non-member group")
-        return value
-
-    def create(self, validated_data) -> GroupMember:
-        code = token_generator.make_token(validated_data.get("user"))
-        new_member_data = {"group": validated_data.get("group"),
-                           "user": validated_data.get("user"), "verification_code": code}
-        return GroupMember.objects.create(**new_member_data)

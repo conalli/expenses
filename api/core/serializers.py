@@ -9,15 +9,20 @@ class UserSerializer(serializers.ModelSerializer):
                   "last_name", "email", "date_joined"]
         extra_kwargs = {'password': {'write_only': True}}
 
-    def validate_email(self, value):
+    def validate_email(self, value: str) -> str:
         if not value or value == "":
             raise serializers.ValidationError("must provide an email address")
         return value
 
-    def create(self, validated_data):
-        print(validated_data)
+    def create(self, validated_data) -> User:
         user = User(email=validated_data["email"],
                     username=validated_data["username"])
         user.set_password(validated_data["password"])
         user.save()
         return user
+
+
+class GroupUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username", "email"]
