@@ -3,8 +3,7 @@ import os
 # import boto3
 from dotenv import load_dotenv
 from flask import Flask, request
-from parse.image import parse_image
-from PIL import Image
+from parse.image import ReceiptParser
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 # from uuid import uuid4
@@ -24,10 +23,9 @@ app.wsgi_app = ProxyFix(
 def save_and_parse_receipt():
     receipt = request.files.get("receipt")
     if not receipt:
-        return (None, 400)
-    image = Image.open(receipt)
-    print(parse_image(image))
-    return (None, 200)
+        return ({"error": "no file in request"}, 400)
+    total = ReceiptParser(receipt).parse().get_total_int()
+    return ({"total": total}, 200)
     # receipt_id = str(uuid4())
     # s3 = boto3.resource("s3",
     #                     aws_access_key_id=os.environ.get("AWS_ACCESS_ID"),
