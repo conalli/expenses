@@ -45,6 +45,8 @@ This should allow you to view the output from celery and celery beat.
 
 - [ ] Add styling to emails.
 
-- [ ] Frontend Mobile app (React Native)
+- [ ] Frontend (In Progress)
 
-- [ ] Receipt text recognition.
+- [x] Basic receipt text recognition.
+
+- [ ] More advanced receipt text recognition.
