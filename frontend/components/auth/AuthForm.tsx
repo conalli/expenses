@@ -13,9 +13,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { AuthRequest, AuthResponse } from "./Auth";
+
+type AuthFormVariant = "Sign in" | "Sign up";
 
 const formSchema = z.object({
   username: z
@@ -33,11 +36,8 @@ const formSchema = z.object({
     .max(50),
 });
 
-export default function AuthForm({
-  variant,
-}: {
-  variant: "Sign in" | "Sign up";
-}) {
+export default function AuthForm({ variant }: { variant: AuthFormVariant }) {
+  const [formType, setFormType] = useState<AuthFormVariant>("Sign in");
   const form = useForm<AuthRequest>({
     resolver: zodResolver(formSchema),
     defaultValues: {

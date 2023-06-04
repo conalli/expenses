@@ -5,7 +5,8 @@ export type AuthRequest = {
 };
 
 export type AuthResponse = {
-  token: string;
   user_id: number;
+  username: string;
   email: string;
+  token: string;
 };
