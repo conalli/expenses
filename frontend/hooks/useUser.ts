@@ -45,7 +45,7 @@ export function useUser() {
           console.error(error);
         }
       };
-      setUser(userFromAuthResponse(data as AuthResponse));
+      setUser(userFromAuthResponse(data));
       addGroupToUser(data);
     }
   }, [user]);

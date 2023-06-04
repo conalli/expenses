@@ -53,5 +53,7 @@ export const userFromAuthResponse = (data: AuthResponse): User => {
     id: data.user_id,
     email: data.email,
     token: data.token,
+    username: data.username,
+    groups: [],
   } as User;
 };
