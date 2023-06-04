@@ -8,8 +8,6 @@ from werkzeug import datastructures
 
 class ReceiptParser:
     receipt_data: str = ""
-    store_name: str = ""
-    total: float = 0.0
 
     def __init__(self, file: datastructures.FileStorage, lang="jpn") -> None:
         self.file = file
@@ -26,7 +24,7 @@ class ReceiptParser:
             receipt, self.lang, config)
         return file_text
 
-    def get_total_int(self) -> int:
+    def get_total(self) -> int:
         found: list[str] = re.findall(r"\d+[.,]\s*\d+\b", self.receipt_data)
         totals = [int(re.sub(r"[.,\s]", "", total))
                   for total in found]

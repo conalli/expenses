@@ -13,4 +13,4 @@ def test_returns_correct_total(file: str, expected: int) -> None:
     with open(file, "rb") as f:
         fs = datastructures.FileStorage(f)
         parser = ReceiptParser(fs)
-        assert parser.parse().get_total_int() == expected
+        assert parser.parse().get_total() == expected

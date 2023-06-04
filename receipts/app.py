@@ -24,7 +24,7 @@ def save_and_parse_receipt():
     receipt = request.files.get("receipt")
     if not receipt:
         return ({"error": "no file in request"}, 400)
-    total = ReceiptParser(receipt).parse().get_total_int()
+    total = ReceiptParser(receipt).parse().get_total()
     return ({"total": total}, 200)
     # receipt_id = str(uuid4())
     # s3 = boto3.resource("s3",
