@@ -48,6 +48,13 @@ class GroupViewSet(viewsets.ModelViewSet):
             print("Validation Err:", serializer.errors)
             return Response({"result": "error", "description": "invalid request"}, status=status.HTTP_400_BAD_REQUEST)
 
+    def destroy(self, _request: Request, pk: int):
+        [group] = self.get_queryset().filter(pk=pk)
+        if group is None:
+            return Response({"result": "error", "description": "you are not a member of the group"}, status=status.HTTP_400_BAD_REQUEST)
+        group.delete()
+        return Response({"result": "success", "deleted": pk})
+
     @action(detail=True)
     def members(self, _request: Request, pk: int) -> Response:
         """ /group/{id}/members GET lists the members of a given group """
