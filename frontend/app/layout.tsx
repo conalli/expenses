@@ -1,6 +1,8 @@
+import { NavLinks } from "@/components/nav/NavLinks";
 import "@/styles/globals.css";
 import { Inter } from "next/font/google";
 import Link from "next/link";
+import { Providers } from "./providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,20 +19,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <nav className="min-w-screen h-[80px] px-8 flex items-center justify-between border-b-2">
-          <Link className="font-bold text-xl text-stone-600" href="/">
-            Expenses.
-          </Link>
-          <ul className="flex gap-4">
-            <li className="bg-emerald-600 rounded-sm text-white px-2 py-1 shadow">
-              <a href="/signup">Sign up</a>
-            </li>
-            <li className="px-2 py-1">
-              <a href="/signin">Sign in</a>
-            </li>
-          </ul>
-        </nav>
-        {children}
+        <Providers>
+          <nav className="min-w-screen h-[80px] px-8 flex items-center justify-between border-b-2">
+            <Link className="font-bold text-xl text-stone-600" href="/">
+              Expenses.
+            </Link>
+            <NavLinks />
+          </nav>
+          {children}
+        </Providers>
       </body>
     </html>
   );

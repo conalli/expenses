@@ -1,14 +1,18 @@
 import { stringToColor } from "@/lib/avatar";
-import { GroupMember } from "@/lib/models";
-import { Avatar, AvatarFallback } from "../ui/avatar";
+import { CollectionMember } from "@/lib/models";
+import { Avatar, AvatarFallback } from "../../ui/avatar";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "../ui/tooltip";
+} from "../../ui/tooltip";
 
-export function MemberAvatar({ member }: { member: GroupMember }) {
+export function CollectionMemberAvatar({
+  member,
+}: {
+  member: CollectionMember;
+}) {
   return (
     <TooltipProvider>
       <Tooltip>

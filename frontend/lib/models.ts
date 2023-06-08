@@ -5,19 +5,20 @@ export type User = {
   username: string;
   email: string;
   token: string;
-  groups: Group[];
+  collections: Collection[];
 };
 
-export type GroupMember = {
+export type CollectionMember = {
   id: number;
   username: string;
   email: string;
 };
 
-export type Group = {
+export type Collection = {
   id: number;
   name: string;
-  members: GroupMember[];
+  members: CollectionMember[];
+  created_at: string;
 };
 
 export type Currency = {
@@ -43,7 +44,7 @@ export type Expense = {
   amount: number;
   paid: boolean;
   date: string;
-  group: Group;
+  group: Collection;
   currency: Currency;
   category: Category;
 };
@@ -54,6 +55,6 @@ export const userFromAuthResponse = (data: AuthResponse): User => {
     email: data.email,
     token: data.token,
     username: data.username,
-    groups: [],
+    collections: [],
   } as User;
 };

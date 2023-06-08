@@ -1,6 +1,8 @@
+import { COLLECTIONS_KEY } from "@/lib/query-keys";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { AuthResponse } from "../components/auth/Auth";
-import { Group, User, userFromAuthResponse } from "../lib/models";
+import { Collection, User, userFromAuthResponse } from "../lib/models";
 
 const getLocalUser = (): AuthResponse | null => {
   const userData = window.localStorage.getItem("EXPENSES_USER");
@@ -10,7 +12,7 @@ const getLocalUser = (): AuthResponse | null => {
   return JSON.parse(userData) as AuthResponse;
 };
 
-const getGroups = async (token: string): Promise<Group[]> => {
+const getCollections = async (token: string): Promise<Collection[]> => {
   const response = await fetch("/api/group/", {
     headers: {
       Authorization: `Token ${token}`,
@@ -19,36 +21,39 @@ const getGroups = async (token: string): Promise<Group[]> => {
   if (response.status !== 200) {
     throw new Error("could not get users groups");
   }
-  return response.json() as Promise<Group[]>;
+  return response.json() as Promise<Collection[]>;
 };
 
 export function useUser() {
   const [user, setUser] = useState<User | null>(null);
+  const collections = useQuery<Collection[]>({
+    queryKey: [COLLECTIONS_KEY, user?.token],
+    queryFn: async (): Promise<Collection[]> => {
+      const token = user?.token;
+      const response = await fetch("/api/group/", {
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      });
+      if (response.status !== 200) {
+        throw new Error("could not get users groups");
+      }
+      return response.json() as Promise<Collection[]>;
+    },
+    enabled: !!user,
+  });
 
   useEffect(() => {
     if (user !== null) return;
     const data = getLocalUser();
     if (!data) window.location.assign("/");
     else {
-      const addGroupToUser = async (res: AuthResponse) => {
-        try {
-          const groups = await getGroups(res.token);
-          const filteredGroups = groups.map((g) => {
-            const members = g.members.filter((m) => m.id !== res.user_id);
-            return { ...g, members } as Group;
-          });
-          setUser((prev) => {
-            if (!prev) return { groups: filteredGroups } as User;
-            else return { ...prev, groups: filteredGroups };
-          });
-        } catch (error) {
-          console.error(error);
-        }
-      };
       setUser(userFromAuthResponse(data));
-      addGroupToUser(data);
     }
   }, [user]);
 
-  return { user };
+  return {
+    user: { ...user, collections: collections.data || [] } as User,
+    collections,
+  };
 }

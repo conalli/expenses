@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Expense, Group } from "../../lib/models";
+import { Collection, Expense } from "../../lib/models";
 import { ExpenseTable } from "../expenses/ExpenseTable";
 
 const getGroupExpenses = async (
@@ -15,19 +15,28 @@ const getGroupExpenses = async (
   return response.json() as Promise<Expense[]>;
 };
 
-export function GroupDetails({
-  group,
+export function CollectionDetails({
+  collection,
   token,
 }: {
-  group: Group;
+  collection: Collection;
   token: string;
 }) {
   const [expenses, setExpenses] = useState<Expense[]>([]);
+
+  const sinceDate = new Date(collection.created_at);
+  const localeDate = new Intl.DateTimeFormat("ja-JP").format(sinceDate);
+
   useEffect(() => {
-    getGroupExpenses(token, group.id).then((data) => setExpenses(data));
-  }, [group, token]);
+    getGroupExpenses(token, collection.id).then((data) => setExpenses(data));
+  }, [collection, token]);
+
   return (
     <div>
+      <div className="flex items-center gap-8">
+        <h1 className="text-2xl font-bold py-6">{collection.name}</h1>
+        <p className="text-sm text-muted-foreground">created: {localeDate}</p>
+      </div>
       {expenses.length > 0 ? <ExpenseTable expenses={expenses} /> : null}
     </div>
   );
