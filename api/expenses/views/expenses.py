@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 import boto3
+from core.permissions import IsAdminOrReadOnly
 from core.utils.queryset import default_user_queryset
 from django.db.models import Model, Q
 from django.db.models.manager import BaseManager
@@ -11,7 +12,6 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from ..models.expenses import Category, Currency, Expense
-from ..permissions import IsAdminOrReadOnly
 from ..serializers.expenses import (CategorySerializer, CurrencySerializer,
                                     ExpenseSerializer)
 
