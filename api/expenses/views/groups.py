@@ -1,3 +1,4 @@
+from core.models import User
 from core.utils.queryset import default_user_queryset
 from django.db.models import Model
 from django.db.models.manager import BaseManager
@@ -56,11 +57,25 @@ class GroupViewSet(viewsets.ModelViewSet):
         return Response({"result": "success", "deleted": pk})
 
     @action(detail=True)
-    def members(self, _request: Request, pk: int) -> Response:
+    def members(self, request: Request, pk: int) -> Response:
         """ /group/{id}/members GET lists the members of a given group """
-        members = GroupMember.objects.filter(group=pk)
+        members = GroupMember.objects.filter(group=pk, user=request.user)
         serializer = GroupMemberSerializer(members, many=True)
         return Response(serializer.data)
+
+    @members.mapping.post
+    def add_member(self, request: Request, pk: int):
+        """ /group/{id}/members POST adds member to group by email """
+        data = JSONParser().parse(request)
+        print("D", data)
+        user = User.objects.get(username=data.get("username"))
+        group = Group.objects.get(pk=pk)
+        if user == None:
+            return Response({"result": "error", "description": f"user with email {data.email} does not exist"})
+        if group == None:
+            return Response({"result": "error", "description": f"group does not exist"})
+        GroupMember.objects.create(user=user, group=group)
+        return Response({"result": "success"})
 
     @action(detail=True)
     def expenses(self, request: Request, pk: int) -> Response:

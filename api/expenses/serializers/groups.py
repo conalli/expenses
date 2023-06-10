@@ -15,7 +15,6 @@ class GroupMemberSerializer(serializers.ModelSerializer):
         fields = "__all__"
         extra_kwargs = {"verified": {"read_only": True},
                         "verification_code": {"read_only": True}}
-        depth = 1
 
     def validate_group(self, value):
         if GroupMember.objects.get(group=value, user=self.context.get("user")) is None:
