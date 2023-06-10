@@ -1,16 +1,28 @@
-import { CollectionMember } from "@/lib/models";
+import { Collection } from "@/lib/models";
+import { AddMemberDialog } from "./AddMemberDialog";
 import { CollectionMemberAvatar } from "./CollectionMemberAvatar";
 
 export function CollectionMembersList({
-  members,
+  token,
+  collection,
+  isSelected,
 }: {
-  members: CollectionMember[];
+  token: string;
+  collection: Collection;
+  isSelected: boolean;
 }) {
   return (
-    <ul className="flex gap-1 -space-x-2">
-      {members.map((m) => (
-        <CollectionMemberAvatar key={m.id} member={m} />
-      ))}
-    </ul>
+    <div className="flex w-full justify-between items-center">
+      <ul className="flex gap-1 -space-x-2">
+        {collection.members.map((m) => (
+          <CollectionMemberAvatar key={m.id} member={m} />
+        ))}
+      </ul>
+      <AddMemberDialog
+        token={token}
+        collection={collection}
+        isSelected={isSelected}
+      />
+    </div>
   );
 }

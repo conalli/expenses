@@ -33,9 +33,11 @@ export function CollectionDetails({
 
   return (
     <div>
-      <div className="flex items-center gap-8">
-        <h1 className="text-2xl font-bold py-6">{collection.name}</h1>
-        <p className="text-sm text-muted-foreground">created: {localeDate}</p>
+      <div className=" py-6">
+        <h1 className="inline text-2xl font-bold py-6">{collection.name}</h1>
+        <p className="inline text-sm text-muted-foreground">
+          created: {localeDate}
+        </p>
       </div>
       {expenses.length > 0 ? <ExpenseTable expenses={expenses} /> : null}
     </div>

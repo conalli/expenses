@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,22 +11,24 @@ import { Input } from "@/components/ui/input";
 import { Collection } from "@/lib/models";
 import { COLLECTIONS_KEY } from "@/lib/query-keys";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { X } from "lucide-react";
+import { PlusCircle } from "lucide-react";
 import { useState } from "react";
 
-const deleteCollection = (token: string) => {
-  return async (id: number) => {
-    const res = await fetch(`/api/group/${id}/`, {
-      method: "DELETE",
+const addMemberToCollection = (token: string, collectionID: number) => {
+  return async (username: string) => {
+    const res = await fetch(`/api/group/${collectionID}/members`, {
+      method: "POST",
       headers: {
         Authorization: `Token ${token}`,
       },
+      body: JSON.stringify({ username }),
     });
-    return (await res.json()) as { result: string; deleted: number };
+    if (res.status >= 300) throw new Error("OMG");
+    return (await res.json()) as { result: string };
   };
 };
 
-export function DeleteCollectionDialog({
+export function AddMemberDialog({
   token,
   collection,
   isSelected,
@@ -38,11 +38,10 @@ export function DeleteCollectionDialog({
   isSelected: boolean;
 }) {
   const [open, setOpen] = useState(false);
-  const [deleteText, setDeleteText] = useState("");
-  const deleteCollectionText = `delete ${collection.name}`;
+  const [memberUsername, setMemberUsername] = useState("");
   const queryClient = useQueryClient();
   const mutation = useMutation({
-    mutationFn: deleteCollection(token),
+    mutationFn: addMemberToCollection(token, collection.id),
     onMutate: async () => {
       await queryClient.cancelQueries([COLLECTIONS_KEY, token]);
     },
@@ -53,46 +52,39 @@ export function DeleteCollectionDialog({
       setOpen(false);
     },
   });
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         className={
-          isSelected ? "bg-red-500 rounded text-white inline-block" : " hidden "
+          isSelected ? "text-emerald-500 rounded  inline-block" : " hidden "
         }
       >
-        <X size={20} />
+        <PlusCircle size={20} />
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="pb-4">Are you sure?</DialogTitle>
+          <DialogTitle className="pb-4">
+            Add new member to {collection.name}?
+          </DialogTitle>
           <DialogDescription>
-            This will permanently delete your
-            <strong> Collection </strong> for all members.
-          </DialogDescription>
-          <DialogDescription>
-            To delete{" "}
-            <strong>
-              <i>{collection.name}</i>
-            </strong>
-            , type &quot;
-            <i>{deleteCollectionText}</i>&quot; in the box below.
+            This will invite them to join your
+            <strong> Collection </strong>.
           </DialogDescription>
         </DialogHeader>
         <Input
-          placeholder={`delete ${collection.name}`}
-          value={deleteText}
-          onChange={(e) => setDeleteText(e.target.value)}
+          placeholder="member username"
+          type="text"
+          value={memberUsername}
+          onChange={(e) => setMemberUsername(e.target.value)}
           className="italic"
         />
         <div className="flex justify-between gap-2">
           <Button
-            variant="destructive"
-            className="w-full"
-            disabled={deleteCollectionText !== deleteText}
-            onClick={() => mutation.mutate(collection.id)}
+            className="w-full bg-emerald-600 hover:bg-emerald-700"
+            disabled={memberUsername.length > 3}
+            onClick={() => mutation.mutate(memberUsername)}
           >
-            Delete
+            Invite
           </Button>
           <Button onClick={() => setOpen(false)} className="w-full">
             Cancel

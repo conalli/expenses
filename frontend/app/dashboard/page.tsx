@@ -33,6 +33,7 @@ export default function Dashboard() {
           </div>
           <div className="py-4">
             <CollectionList
+              token={user.token}
               collections={user.collections}
               selectedCollection={selectedCollection}
               selectCollection={handleSelectCollection}
