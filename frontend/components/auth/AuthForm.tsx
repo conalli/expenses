@@ -76,7 +76,10 @@ export default function AuthForm({ variant }: { variant: AuthFormVariant }) {
       });
       if (response.status === 200) {
         const res = (await response.json()) as AuthResponse;
-        await window.localStorage.setItem("EXPENSES_USER", JSON.stringify(res));
+        await window.sessionStorage.setItem(
+          "EXPENSES_USER",
+          JSON.stringify(res)
+        );
         router.push("/dashboard");
       }
     } catch (error) {

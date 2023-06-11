@@ -17,7 +17,7 @@ import {
 export function UserAvatar({ user }: { user: User }) {
   const router = useRouter();
   const logOut = () => {
-    window.localStorage.removeItem("EXPENSES_USER");
+    window.sessionStorage.removeItem("EXPENSES_USER");
     router.push("/");
   };
   return (

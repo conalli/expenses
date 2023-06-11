@@ -4,6 +4,7 @@ import { AddCollectionResponse } from "@/lib/api-response";
 import { COLLECTIONS_KEY } from "@/lib/query-keys";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Plus } from "lucide-react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "../ui/button";
@@ -91,13 +92,27 @@ export function AddCollectionForm({ token }: { token: string }) {
             </FormItem>
           )}
         />
-        <Button
-          type="submit"
-          disabled={collections.isLoading}
-          className="bg-emerald-600"
-        >
-          Add +
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            type="submit"
+            disabled={collections.isLoading}
+            className="bg-emerald-600 hover:bg-emerald-700 flex gap-2"
+          >
+            <Plus size={20} />
+            Add
+          </Button>
+          <Button
+            type="button"
+            disabled={collections.isLoading}
+            className="flex gap-2"
+            onClick={(e) => {
+              e.preventDefault();
+              form.reset();
+            }}
+          >
+            Cancel
+          </Button>
+        </div>
       </form>
     </Form>
   );

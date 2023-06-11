@@ -58,7 +58,9 @@ export function DeleteCollectionDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         className={
-          isSelected ? "bg-red-500 rounded text-white inline-block" : " hidden "
+          isSelected
+            ? "bg-red-500 hover:bg-red-600 rounded text-white inline-block"
+            : " hidden "
         }
       >
         <X size={20} />
