@@ -2,8 +2,8 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
-import { Expense } from "../../lib/models";
-import { Button } from "../ui/button";
+import { Expense } from "../../../../../../lib/api/models";
+import { Button } from "../../../../../ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,7 +11,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+} from "../../../../../ui/dropdown-menu";
 
 const amountToCurrency = (amount: number, decimals: number): string => {
   const total = amount / 10 ** decimals;

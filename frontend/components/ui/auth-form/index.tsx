@@ -11,13 +11,19 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { AuthResponse } from "@/lib/api/response";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { AuthRequest, AuthResponse } from "./Auth";
 
 type AuthFormVariant = "Sign in" | "Sign up";
+
+export type AuthRequest = {
+  username: string;
+  email: string;
+  password: string;
+};
 
 const formSchema = z.object({
   username: z

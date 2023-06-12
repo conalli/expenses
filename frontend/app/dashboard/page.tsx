@@ -1,17 +1,20 @@
 "use client";
 
-import { AddCollectionForm } from "@/components/collections/AddCollectionForm";
-import { CollectionDetails } from "@/components/collections/CollectionDetails";
-import { CollectionList } from "@/components/collections/CollectionList";
-import { ExpenseDialog } from "@/components/expenses/ExpenseDialog";
-import { Loader } from "@/components/loading/Loader";
+import { AddCollectionForm } from "@/components/dashboard/AddCollectionForm";
+import { AddExpenseDialog } from "@/components/dashboard/AddExpenseDialog";
+import {
+  CollectionDetails,
+  ExpensePeriod,
+} from "@/components/dashboard/CollectionDetails";
+import { CollectionList } from "@/components/dashboard/CollectionList";
+import { Loader } from "@/components/ui/loading/Loader";
 import { useUser } from "@/hooks/useUser";
-import { Category, Collection, Currency } from "@/lib/models";
+import { Category, Collection, Currency } from "@/lib/api/models";
 import { CATEGORIES_KEY, CURRENCIES_KEY } from "@/lib/query-keys";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
-const getCurrencies = (token: string) => {
+const getCurrencies = (token?: string) => {
   return async () => {
     const res = await fetch("/api/currency/", {
       headers: {
@@ -23,7 +26,7 @@ const getCurrencies = (token: string) => {
   };
 };
 
-const getCategories = (token: string) => {
+const getCategories = (token?: string) => {
   return async () => {
     const res = await fetch("/api/category/", {
       headers: {
@@ -39,14 +42,20 @@ export default function Dashboard() {
   const { user, collections } = useUser();
   const [selectedCollection, setSelectedCollection] =
     useState<Collection | null>(null);
+  const [expensePeriod, setExpensePeriod] = useState<ExpensePeriod>("month");
+
+  const handlePeriodChange = (period: ExpensePeriod) => {
+    setExpensePeriod(period);
+  };
+
   const currencies = useQuery({
-    queryKey: [CURRENCIES_KEY, user.token],
-    queryFn: getCurrencies(user.token),
+    queryKey: [CURRENCIES_KEY, user?.token],
+    queryFn: getCurrencies(user?.token),
     enabled: !!user,
   });
   const categories = useQuery({
-    queryKey: [CATEGORIES_KEY, user.token],
-    queryFn: getCategories(user.token),
+    queryKey: [CATEGORIES_KEY, user?.token],
+    queryFn: getCategories(user?.token),
     enabled: !!user,
   });
   useEffect(() => {
@@ -85,23 +94,31 @@ export default function Dashboard() {
           {selectedCollection && (
             <CollectionDetails
               collection={selectedCollection}
-              token={user.token}
+              user={user}
+              expensePeriod={expensePeriod}
+              setExpensePeriod={handlePeriodChange}
             />
           )}
         </div>
         <div className="col-start-5 col-span-4 z-10 py-8">
-          {selectedCollection && currencies.data && (
+          {selectedCollection && categories.data && currencies.data && (
             <div className="flex gap-2">
-              <ExpenseDialog
+              <AddExpenseDialog
                 type="default"
+                user={user}
+                expensePeriod={expensePeriod}
                 collection={selectedCollection}
+                categories={categories.data}
                 currencies={currencies.data}
               />
-              <ExpenseDialog
+              {/* <AddReceiptDialog
                 type="receipt"
+                user={user}
+                expensePeriod={expensePeriod}
                 collection={selectedCollection}
+                categories={categories.data}
                 currencies={currencies.data}
-              />
+              /> */}
             </div>
           )}
         </div>

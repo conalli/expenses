@@ -1,4 +1,4 @@
-import AuthForm from "@/components/auth/AuthForm";
+import AuthForm from "@/components/ui/auth-form";
 import Link from "next/link";
 
 export default function SignIn() {

@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -8,27 +10,25 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Collection } from "@/lib/models";
+import { Collection } from "@/lib/api/models";
 import { COLLECTIONS_KEY } from "@/lib/query-keys";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { PlusCircle } from "lucide-react";
+import { X } from "lucide-react";
 import { useState } from "react";
 
-const addMemberToCollection = (token: string, collectionID: number) => {
-  return async (username: string) => {
-    const res = await fetch(`/api/group/${collectionID}/members`, {
-      method: "POST",
+const deleteCollection = (token: string) => {
+  return async (id: number) => {
+    const res = await fetch(`/api/group/${id}/`, {
+      method: "DELETE",
       headers: {
         Authorization: `Token ${token}`,
       },
-      body: JSON.stringify({ username }),
     });
-    if (res.status >= 300) throw new Error("OMG");
-    return (await res.json()) as { result: string };
+    return (await res.json()) as { result: string; deleted: number };
   };
 };
 
-export function AddMemberDialog({
+export function DeleteCollectionDialog({
   token,
   collection,
   isSelected,
@@ -38,10 +38,11 @@ export function AddMemberDialog({
   isSelected: boolean;
 }) {
   const [open, setOpen] = useState(false);
-  const [memberUsername, setMemberUsername] = useState("");
+  const [deleteText, setDeleteText] = useState("");
+  const deleteCollectionText = `delete ${collection.name}`;
   const queryClient = useQueryClient();
   const mutation = useMutation({
-    mutationFn: addMemberToCollection(token, collection.id),
+    mutationFn: deleteCollection(token),
     onMutate: async () => {
       await queryClient.cancelQueries([COLLECTIONS_KEY, token]);
     },
@@ -52,41 +53,48 @@ export function AddMemberDialog({
       setOpen(false);
     },
   });
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         className={
           isSelected
-            ? "text-emerald-600 hover:text-emerald-500 rounded  inline-block"
+            ? "bg-red-500 hover:bg-red-600 rounded text-white inline-block"
             : " hidden "
         }
       >
-        <PlusCircle size={20} />
+        <X size={20} />
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="pb-4">
-            Add new member to {collection.name}?
-          </DialogTitle>
+          <DialogTitle className="pb-4">Are you sure?</DialogTitle>
           <DialogDescription>
-            This will invite them to join your
-            <strong> Collection </strong>.
+            This will permanently delete your
+            <strong> Collection </strong> for all members.
+          </DialogDescription>
+          <DialogDescription>
+            To delete{" "}
+            <strong>
+              <i>{collection.name}</i>
+            </strong>
+            , type &quot;
+            <i>{deleteCollectionText}</i>&quot; in the box below.
           </DialogDescription>
         </DialogHeader>
         <Input
-          placeholder="member username"
-          type="text"
-          value={memberUsername}
-          onChange={(e) => setMemberUsername(e.target.value)}
+          placeholder={`delete ${collection.name}`}
+          value={deleteText}
+          onChange={(e) => setDeleteText(e.target.value)}
           className="italic"
         />
         <div className="flex justify-between gap-2">
           <Button
-            className="w-full bg-emerald-600 hover:bg-emerald-700"
-            disabled={memberUsername.length > 3}
-            onClick={() => mutation.mutate(memberUsername)}
+            variant="destructive"
+            className="w-full"
+            disabled={deleteCollectionText !== deleteText}
+            onClick={() => mutation.mutate(collection.id)}
           >
-            Invite
+            Delete
           </Button>
           <Button onClick={() => setOpen(false)} className="w-full">
             Cancel

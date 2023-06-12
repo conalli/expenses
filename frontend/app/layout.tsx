@@ -1,8 +1,8 @@
-import { NavLinks } from "@/components/nav/NavLinks";
+import { Providers } from "@/components/providers";
+import { NavLinks } from "@/components/ui/nav/NavLinks";
 import "@/styles/globals.css";
 import { Inter } from "next/font/google";
 import Link from "next/link";
-import { Providers } from "./providers";
 
 const inter = Inter({ subsets: ["latin"] });
 

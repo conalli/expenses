@@ -1,5 +1,5 @@
+import { CollectionMember } from "@/lib/api/models";
 import { stringToColor } from "@/lib/avatar";
-import { CollectionMember } from "@/lib/models";
 import { Avatar, AvatarFallback } from "../../ui/avatar";
 import {
   Tooltip,

@@ -1,16 +1,15 @@
 import { EXPENSES_KEY } from "@/lib/query-keys";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
-import { Collection, Expense } from "../../lib/models";
-import { ExpenseTable } from "../expenses/ExpenseTable";
-import { Loader } from "../loading/Loader";
+import { Collection, Expense, UserWithToken } from "../../../lib/api/models";
+import { Loader } from "../../ui/loading/Loader";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
+} from "../../ui/select";
+import { ExpenseTable } from "./components/ExpenseTable";
 
 const getGroupExpenses = (token: string, groupID: number, params = "") => {
   return async (): Promise<Expense[]> => {
@@ -29,7 +28,7 @@ const createdDate = (createdDate: string): string => {
   return new Intl.DateTimeFormat("ja-JP").format(sinceDate);
 };
 
-type ExpensePeriod = "month" | "year" | "" | undefined;
+export type ExpensePeriod = "month" | "year" | "" | undefined;
 
 const expensePeriodToString = (period: ExpensePeriod): string => {
   const date = new Date();
@@ -55,16 +54,19 @@ const periodToParam = (period: string): string => {
 
 export function CollectionDetails({
   collection,
-  token,
+  user,
+  expensePeriod,
+  setExpensePeriod,
 }: {
   collection: Collection;
-  token: string;
+  user: UserWithToken;
+  expensePeriod: ExpensePeriod;
+  setExpensePeriod: (period: ExpensePeriod) => void;
 }) {
-  const [expensePeriod, setExpensePeriod] = useState<ExpensePeriod>("month");
   const { data: expenses, isLoading } = useQuery({
-    queryKey: [EXPENSES_KEY, collection.id, expensePeriod, token],
+    queryKey: [EXPENSES_KEY, collection.id, expensePeriod, user.token],
     queryFn: getGroupExpenses(
-      token,
+      user.token,
       collection.id,
       periodToParam(expensePeriodToString(expensePeriod))
     ),

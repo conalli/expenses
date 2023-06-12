@@ -1,10 +1,10 @@
 "use client";
 
+import { User } from "@/lib/api/models";
 import { stringToColor } from "@/lib/avatar";
-import { User } from "@/lib/models";
 import { useRouter } from "next/navigation";
-import { Avatar, AvatarFallback } from "../ui/avatar";
-import { Button } from "../ui/button";
+import { Avatar, AvatarFallback } from "../avatar";
+import { Button } from "../button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,7 +12,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+} from "../dropdown-menu";
 
 export function UserAvatar({ user }: { user: User }) {
   const router = useRouter();

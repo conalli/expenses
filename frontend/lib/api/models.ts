@@ -1,4 +1,4 @@
-import { AuthResponse } from "../components/auth/Auth";
+import { AuthResponse } from "./response";
 
 export type User = {
   id: number;

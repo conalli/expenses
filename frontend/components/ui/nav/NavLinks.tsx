@@ -2,7 +2,7 @@
 
 import { useUser } from "@/hooks/useUser";
 import Link from "next/link";
-import { Button } from "../ui/button";
+import { Button } from "../button";
 import { UserAvatar } from "./UserAvatar";
 
 export function NavLinks() {

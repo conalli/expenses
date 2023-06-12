@@ -1,8 +1,12 @@
-import { Collection, UserWithToken, userFromAuthResponse } from "@/lib/models";
+import {
+  Collection,
+  UserWithToken,
+  userFromAuthResponse,
+} from "@/lib/api/models";
+import { AuthResponse } from "@/lib/api/response";
 import { COLLECTIONS_KEY } from "@/lib/query-keys";
 import { UseQueryResult, useQuery } from "@tanstack/react-query";
 import { ReactNode, createContext, useEffect, useMemo, useState } from "react";
-import { AuthResponse } from "./Auth";
 
 type AuthContext = {
   user?: UserWithToken;

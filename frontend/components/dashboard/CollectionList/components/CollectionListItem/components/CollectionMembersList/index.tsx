@@ -1,6 +1,6 @@
-import { Collection } from "@/lib/models";
-import { AddMemberDialog } from "./AddMemberDialog";
-import { CollectionMemberAvatar } from "./CollectionMemberAvatar";
+import { Collection } from "@/lib/api/models";
+import { AddMemberDialog } from "./components/AddMemberDialog";
+import { CollectionMemberAvatar } from "./components/CollectionMemberAvatar";
 
 export function CollectionMembersList({
   token,

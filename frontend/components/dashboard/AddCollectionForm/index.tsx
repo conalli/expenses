@@ -1,13 +1,6 @@
 "use client";
 
-import { AddCollectionResponse } from "@/lib/api-response";
-import { COLLECTIONS_KEY } from "@/lib/query-keys";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus } from "lucide-react";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -15,8 +8,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
-import { Input } from "../ui/input";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { AddCollectionResponse } from "@/lib/api/response";
+import { COLLECTIONS_KEY } from "@/lib/query-keys";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Plus } from "lucide-react";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 
 const schema = z.object({
   name: z.string().min(3, {
