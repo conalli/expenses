@@ -1,19 +1,21 @@
 "use client";
 
+import { useUser } from "@/hooks/useUser";
 import Link from "next/link";
 import { Button } from "../ui/button";
+import { UserAvatar } from "./UserAvatar";
 
 export function NavLinks() {
-  // const { user } = useUser();
+  const { user } = useUser();
   return (
     <ul className="flex gap-4">
-      {/* {!user ? ( */}
-      <li>
-        <Button className="bg-emerald-600 hover:bg-emerald-700">
-          <Link href="/signin">Sign in</Link>
-        </Button>
-      </li>
-      {/* ) : (
+      {!user ? (
+        <li>
+          <Button className="bg-emerald-600 hover:bg-emerald-700">
+            <Link href="/signin">Sign in</Link>
+          </Button>
+        </li>
+      ) : (
         <>
           <li>
             <Button className="bg-emerald-600 hover:bg-emerald-700">
@@ -22,7 +24,7 @@ export function NavLinks() {
           </li>
           <li>{user.username && <UserAvatar user={user} />}</li>
         </>
-      )} */}
+      )}
     </ul>
   );
 }
