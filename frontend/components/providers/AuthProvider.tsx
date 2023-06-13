@@ -1,3 +1,4 @@
+"use client";
 import {
   Collection,
   UserWithToken,
@@ -6,6 +7,7 @@ import {
 import { AuthResponse } from "@/lib/api/response";
 import { COLLECTIONS_KEY } from "@/lib/query-keys";
 import { UseQueryResult, useQuery } from "@tanstack/react-query";
+import { usePathname } from "next/navigation";
 import { ReactNode, createContext, useEffect, useMemo, useState } from "react";
 
 type AuthContext = {
@@ -44,6 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserWithToken>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
+  const pathname = usePathname();
   const collections = useQuery<Collection[]>({
     queryKey: [COLLECTIONS_KEY, user?.token],
     queryFn: getCollections(user?.token),
@@ -58,18 +61,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (user !== undefined) return;
-    console.log("hello");
     setIsLoading(true);
     const data = getSessionUser();
     if (!data) {
-      setIsLoading(false);
-      setIsError(true);
-      window.location.assign("/");
+      const allowedPaths = ["/", "/signin", "/signup"];
+      if (!allowedPaths.includes(pathname)) {
+        setIsLoading(false);
+        setIsError(true);
+        window.location.assign("/");
+      }
     } else {
       setIsLoading(false);
       setUser(userFromAuthResponse(data));
     }
-  }, [user]);
+  }, [pathname, user]);
 
   const authMemo = useMemo(
     () => ({
