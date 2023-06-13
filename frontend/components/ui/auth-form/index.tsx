@@ -16,6 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { useToast } from "../use-toast";
 
 type AuthFormVariant = "Sign in" | "Sign up";
 
@@ -52,6 +53,7 @@ export default function AuthForm({ variant }: { variant: AuthFormVariant }) {
   });
 
   const router = useRouter();
+  const { toast } = useToast();
 
   const onSignUpSubmit = async (values: AuthRequest) => {
     try {
@@ -67,6 +69,11 @@ export default function AuthForm({ variant }: { variant: AuthFormVariant }) {
       }
     } catch (error) {
       console.error(error);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "please check your credentials and try again",
+      });
       form.reset();
     }
   };
@@ -90,6 +97,11 @@ export default function AuthForm({ variant }: { variant: AuthFormVariant }) {
       }
     } catch (error) {
       console.error(error);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "please check your credentials and try again",
+      });
       form.reset();
     }
   };
