@@ -1,3 +1,14 @@
+import { DatePicker } from "@/components/ui/date-picker";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { useToast } from "@/components/ui/use-toast";
 import {
   Category,
   Collection,
@@ -6,11 +17,13 @@ import {
   UserWithToken,
 } from "@/lib/api/models";
 import { EXPENSES_KEY } from "@/lib/query-keys";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 import { Button } from "../../ui/button";
-import { DatePicker } from "../../ui/date-picker";
 import {
   Dialog,
   DialogContent,
@@ -20,7 +33,6 @@ import {
   DialogTrigger,
 } from "../../ui/dialog";
 import { Input } from "../../ui/input";
-import { Label } from "../../ui/label";
 import {
   Select,
   SelectContent,
@@ -51,15 +63,24 @@ const generateStep = (currency?: Currency): number => {
 type AddExpenseRequest = {
   title: string;
   description?: string;
-  amount: number;
+  amount: string;
   paid: boolean;
   paid_by_id: number | null;
   date: Date;
-  category_id: number;
-  currency_id: number;
+  category_id: string;
+  currency_id: string;
   group_id: number;
   created_by_id: number;
 };
+
+const schema = z.object({
+  title: z.string().max(50),
+  description: z.string().max(255).optional(),
+  amount: z.string().default("0"),
+  date: z.date(),
+  category_id: z.string(),
+  currency_id: z.string(),
+});
 
 const addExpense = (token: string) => {
   return async (data: AddExpenseRequest) => {
@@ -76,14 +97,12 @@ const addExpense = (token: string) => {
 };
 
 export function AddExpenseDialog({
-  type,
   user,
   expensePeriod,
   collection,
   categories,
   currencies,
 }: {
-  type: "default" | "receipt";
   user: UserWithToken;
   expensePeriod: ExpensePeriod;
   collection: Collection;
@@ -94,6 +113,10 @@ export function AddExpenseDialog({
   const [date, setDate] = useState<Date>();
   const [selectedCurrency, setSelectedCurrency] = useState<string>();
   const [selectedCategory, setSelectedCategory] = useState<string>();
+  const form = useForm<AddExpenseRequest>({
+    resolver: zodResolver(schema),
+  });
+  const { toast } = useToast();
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: addExpense(user.token),
@@ -114,7 +137,13 @@ export function AddExpenseDialog({
       ]);
     },
     // onSuccess: () => {},
-    // onError: () => {},
+    onError: () => {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "could not create new expense",
+      });
+    },
   });
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -136,87 +165,193 @@ export function AddExpenseDialog({
             <strong> Collection </strong>.
           </DialogDescription>
         </DialogHeader>
-        <Label htmlFor="title">Title</Label>
-        <Input placeholder="title" type="text" className="italic" id="title" />
-        <Label htmlFor="description">Description</Label>
-        <Textarea
-          placeholder="description"
-          className="italic"
-          id="description"
-        />
-        <Label htmlFor="category">Category</Label>
-        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-          <SelectTrigger>
-            <SelectValue placeholder="Category" />
-          </SelectTrigger>
-          <SelectContent>
-            {categories.map((c) => {
-              return (
-                <SelectItem key={c.id} value={JSON.stringify(c)}>
-                  {c.title}
-                </SelectItem>
-              );
-            })}
-          </SelectContent>
-        </Select>
-        <div className="flex items-center gap-2">
-          <Label htmlFor="currency">Currency</Label>
-          <Select value={selectedCurrency} onValueChange={setSelectedCurrency}>
-            <SelectTrigger>
-              <SelectValue className="" placeholder="Currency" />
-            </SelectTrigger>
-            <SelectContent>
-              {currencies.map((c) => {
-                return (
-                  <SelectItem key={c.id} value={JSON.stringify(c)}>
-                    {c.symbol}
-                  </SelectItem>
-                );
-              })}
-            </SelectContent>
-          </Select>
-          <Label htmlFor="amount">Amount</Label>
-          <Input
-            className="grow-[2]"
-            placeholder="amount"
-            type="number"
-            step={
-              selectedCurrency &&
-              generateStep(JSON.parse(selectedCurrency) as Currency)
-            }
-            id="amount"
-          />
-        </div>
-        <Label htmlFor="date">Date</Label>
-        <DatePicker date={date} setDate={setDate} />
-        <div className="flex justify-between gap-2">
-          <Button
-            onClick={() => {
-              const category =
-                selectedCategory && (JSON.parse(selectedCategory) as Category);
-              const currency =
-                selectedCurrency && (JSON.parse(selectedCurrency) as Currency);
-              mutation.mutate({
-                group_id: collection.id,
-                paid_by_id: null,
-                category_id: category ? category.id : 0,
-                currency_id: currency ? currency.id : 0,
-                created_by_id: user.id,
-                amount: 11111,
-                title: "",
-                paid: false,
-                date: date ?? new Date(),
-              });
-            }}
-            className="flex gap-2 w-full bg-emerald-600 hover:bg-emerald-700"
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit((data) => console.log("data", data))}
           >
-            <Plus size={24} />
-            Add
-          </Button>
-          <Button onClick={() => setOpen(false)} className="w-full">
-            Cancel
-          </Button>
-        </div>
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel htmlFor="title">Title</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="title"
+                      type="text"
+                      className="italic"
+                      id="title"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Give you Expense a regonizable title.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="description"
+                      className="italic"
+                      id="description"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Describe your Expense for future reference (optional).
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="category_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Category</FormLabel>
+                  <FormControl>
+                    <Select {...field} onValueChange={field.onChange}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories.map((c) => {
+                          return (
+                            <SelectItem key={c.id} value={String(c.id)}>
+                              {c.title}
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormDescription>
+                    Choose a Category for your Expense.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="currency_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Currency</FormLabel>
+                  <FormControl>
+                    <Select {...field} onValueChange={field.onChange}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Currency" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {currencies.map((c) => {
+                          return (
+                            <SelectItem key={c.id} value={String(c.id)}>
+                              {c.symbol}
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormDescription>
+                    Choose the Currency of your Expense.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="amount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Amount</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="amount"
+                      type="number"
+                      step={
+                        selectedCurrency &&
+                        generateStep(JSON.parse(selectedCurrency) as Currency)
+                      }
+                      className="italic"
+                      id="amount"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>The total for your Expense.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="date"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Date</FormLabel>
+                  <FormControl>
+                    <DatePicker
+                      {...field}
+                      date={field.value}
+                      setDate={field.onChange}
+                    />
+                  </FormControl>
+                  <FormDescription>The date of your Expense.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="flex justify-between gap-2">
+              <Button
+                type="submit"
+                onClick={() => console.log(form.formState.errors)}
+                // onClick={() => {
+                //   const category =
+                //     selectedCategory &&
+                //     (JSON.parse(selectedCategory) as Category);
+                //   const currency =
+                //     selectedCurrency &&
+                //     (JSON.parse(selectedCurrency) as Currency);
+                //   mutation.mutate({
+                //     group_id: collection.id,
+                //     paid_by_id: null,
+                //     category_id: category ? category.id : 0,
+                //     currency_id: currency ? currency.id : 0,
+                //     created_by_id: user.id,
+                //     amount: 11111,
+                //     title: "",
+                //     paid: false,
+                //     date: date ?? new Date(),
+                //   });
+                // }}
+                className="flex gap-2 w-full bg-emerald-600 hover:bg-emerald-700"
+              >
+                <Plus size={24} />
+                Add
+              </Button>
+              <Button
+                onClick={() => {
+                  form.reset();
+                  setOpen(false);
+                }}
+                className="w-full"
+              >
+                Cancel
+              </Button>
+            </div>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

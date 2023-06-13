@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "../../ui/select";
 import { ExpenseTable } from "./components/ExpenseTable";
+import { Placeholder } from "./components/ExpenseTable/Placeholder";
 
 const getGroupExpenses = (token: string, groupID: number, params = "") => {
   return async (): Promise<Expense[]> => {
@@ -114,7 +115,9 @@ export function CollectionDetails({
       {isLoading && <Loader />}
       {expenses && expenses.length > 0 ? (
         <ExpenseTable expenses={expenses} />
-      ) : null}
+      ) : (
+        <Placeholder user={user} collection={collection} />
+      )}
     </div>
   );
 }

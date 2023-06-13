@@ -2,12 +2,14 @@
 
 import { AddCollectionForm } from "@/components/dashboard/AddCollectionForm";
 import { AddExpenseDialog } from "@/components/dashboard/AddExpenseDialog";
+import { AddReceiptDialog } from "@/components/dashboard/AddReceiptDialog";
 import {
   CollectionDetails,
   ExpensePeriod,
 } from "@/components/dashboard/CollectionDetails";
 import { CollectionList } from "@/components/dashboard/CollectionList";
 import { Loader } from "@/components/ui/loading/Loader";
+import { useToast } from "@/components/ui/use-toast";
 import { useUser } from "@/hooks/useUser";
 import { Category, Collection, Currency } from "@/lib/api/models";
 import { CATEGORIES_KEY, CURRENCIES_KEY } from "@/lib/query-keys";
@@ -43,7 +45,7 @@ export default function Dashboard() {
   const [selectedCollection, setSelectedCollection] =
     useState<Collection | null>(null);
   const [expensePeriod, setExpensePeriod] = useState<ExpensePeriod>("month");
-
+  const { toast } = useToast();
   const handlePeriodChange = (period: ExpensePeriod) => {
     setExpensePeriod(period);
   };
@@ -52,12 +54,28 @@ export default function Dashboard() {
     queryKey: [CURRENCIES_KEY, user?.token],
     queryFn: getCurrencies(user?.token),
     enabled: !!user,
+    onError: (_err) => {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "could not get user currencies",
+      });
+    },
   });
+
   const categories = useQuery({
     queryKey: [CATEGORIES_KEY, user?.token],
     queryFn: getCategories(user?.token),
     enabled: !!user,
+    onError: (_err) => {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "could not get user currencies",
+      });
+    },
   });
+
   useEffect(() => {
     if (!user) return;
     if (user.collections.length >= 1 && !selectedCollection) {
@@ -104,21 +122,18 @@ export default function Dashboard() {
           {selectedCollection && categories.data && currencies.data && (
             <div className="flex gap-2">
               <AddExpenseDialog
-                type="default"
                 user={user}
                 expensePeriod={expensePeriod}
                 collection={selectedCollection}
                 categories={categories.data}
                 currencies={currencies.data}
               />
-              {/* <AddReceiptDialog
-                type="receipt"
+              <AddReceiptDialog
                 user={user}
                 expensePeriod={expensePeriod}
                 collection={selectedCollection}
                 categories={categories.data}
-                currencies={currencies.data}
-              /> */}
+              />
             </div>
           )}
         </div>
