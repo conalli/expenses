@@ -9,7 +9,7 @@ from .groups import Group, GroupMember
 class Category(models.Model):
     """ Category represents an Expense category """
     title = models.CharField(max_length=50, blank=False)
-    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, null=True)
     public = models.BooleanField(default=False)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
@@ -42,7 +42,7 @@ class Expense(models.Model):
     paid_by = models.ForeignKey(
         GroupMember, on_delete=models.SET_NULL, default=None, null=True)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
-    date = models.DateField(default=timezone.now)
+    date = models.DateField(default=timezone.localdate)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -1,7 +1,9 @@
+import datetime
 import os
 from pathlib import Path
 
 import boto3
+import requests
 from core.permissions import IsAdminOrReadOnly
 from core.utils.queryset import default_user_queryset
 from django.db.models import Model, Q
@@ -34,6 +36,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 class ExpenseViewSet(viewsets.ModelViewSet):
     serializer_class = ExpenseSerializer
+
     supported_file_extensions = [".jpg", ".jpeg", ".png", ".webp"]
     bucket_region_code = os.environ.get("S3_BUCKET_REGION_CODE")
     bucket_name = os.environ.get("S3_BUCKET_NAME")
@@ -45,8 +48,32 @@ class ExpenseViewSet(viewsets.ModelViewSet):
     def get_queryset(self) -> BaseManager[Model]:
         return default_user_queryset(self, Expense, "created_by")
 
-    @action(detail=True, methods=["post"])
-    def receipt(self, request: Request, pk: int) -> Response:
+    @action(detail=False, methods=["POST"])
+    def receipt(self, request: Request) -> Response:
+        receipt = request.FILES.get("receipt", None)
+        if not receipt:
+            return Response({"result": "error", "details": "no file in request"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            dt = datetime.datetime.now()
+            receipt_file_path = Path(receipt.name)
+            if receipt_file_path.suffix not in self.supported_file_extensions:
+                return Response({"result": "error", "details": "unsupported file format"}, status=status.HTTP_400_BAD_REQUEST)
+            response = requests.post(
+                "http://receipts:8001/receipts", files={"receipt": receipt})
+            key = f"/{request.user}/{dt.date()}_{receipt_file_path}"
+            self.s3.meta.client.upload_fileobj(receipt, self.bucket_name, key)
+            url = self.bucket_url + key
+            amount = response.json()
+            title = f"New Expense - {dt.date()}"
+            expense = Expense.objects.create(title=title, amount=amount.get("total"), created_by=request.user,
+                                             group_id=int(request.data.get("group_id")), currency_id=1, category_id=9, receipt_url=url)
+            return Response(ExpenseSerializer(expense).data)
+        except Exception as e:
+            print("ERROR", e)
+            return Response({"result": "error", "details": "could not process file"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=True, methods=["PUT"])
+    def upload(self, request: Request, pk: int) -> Response:
         receipt = request.FILES.get("receipt", None)
         if not receipt:
             return Response({"result": "error", "details": "no file in request"}, status=status.HTTP_400_BAD_REQUEST)
@@ -54,7 +81,7 @@ class ExpenseViewSet(viewsets.ModelViewSet):
             receipt_file_path = Path(receipt.name)
             if receipt_file_path.suffix not in self.supported_file_extensions:
                 return Response({"result": "error", "details": "unsupported file format"}, status=status.HTTP_400_BAD_REQUEST)
-            key = f"{request.user}_{pk}_{receipt_file_path.stem}"
+            key = f"{request.user}/{receipt_file_path}"
             self.s3.meta.client.upload_fileobj(receipt, self.bucket_name, key)
             url = self.bucket_url + key
             Expense.objects.filter(pk=pk).update(receipt_url=url)

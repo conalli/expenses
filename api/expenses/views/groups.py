@@ -64,10 +64,9 @@ class GroupViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     @members.mapping.post
-    def add_member(self, request: Request, pk: int):
+    def add_member(self, request: Request, pk: int) -> Response:
         """ /group/{id}/members POST adds member to group by email """
         data = JSONParser().parse(request)
-        print("D", data)
         user = User.objects.get(username=data.get("username"))
         group = Group.objects.get(pk=pk)
         if user == None:
