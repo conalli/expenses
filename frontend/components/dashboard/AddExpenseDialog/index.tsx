@@ -19,6 +19,7 @@ import {
 import { EXPENSES_KEY } from "@/lib/query-keys";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { format } from "date-fns";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -84,12 +85,17 @@ const schema = z.object({
 
 const addExpense = (token: string) => {
   return async (data: AddExpenseRequest) => {
+    const cleanedData = {
+      ...data,
+      date: format(data.date, "yyyy-MM-dd"),
+    };
     const res = await fetch("/api/expense/", {
       method: "POST",
       headers: {
         Authorization: `Token ${token}`,
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(cleanedData),
     });
     if (res.status >= 300) throw new Error("OMG CANT ADD");
     return (await res.json()) as Expense;
@@ -110,11 +116,20 @@ export function AddExpenseDialog({
   currencies: Currency[];
 }) {
   const [open, setOpen] = useState(false);
-  const [date, setDate] = useState<Date>();
-  const [selectedCurrency, setSelectedCurrency] = useState<string>();
-  const [selectedCategory, setSelectedCategory] = useState<string>();
   const form = useForm<AddExpenseRequest>({
     resolver: zodResolver(schema),
+    defaultValues: {
+      title: "",
+      description: "",
+      amount: "0",
+      paid: false,
+      paid_by_id: null,
+      date: undefined,
+      category_id: "9",
+      currency_id: "1",
+      group_id: collection.id,
+      created_by_id: user.id,
+    },
   });
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -167,14 +182,21 @@ export function AddExpenseDialog({
         </DialogHeader>
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit((data) => console.log("data", data))}
+            onSubmit={form.handleSubmit((data) =>
+              mutation.mutate({
+                ...data,
+                paid_by_id: null,
+                group_id: collection.id,
+                created_by_id: user.id,
+              })
+            )}
           >
             <FormField
               control={form.control}
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel htmlFor="title">Title</FormLabel>
+                  <FormLabel>Title</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="title"
@@ -280,10 +302,9 @@ export function AddExpenseDialog({
                     <Input
                       placeholder="amount"
                       type="number"
-                      step={
-                        selectedCurrency &&
-                        generateStep(JSON.parse(selectedCurrency) as Currency)
-                      }
+                      step={generateStep(
+                        currencies[Number(form.getValues()["currency_id"]) || 0]
+                      )}
                       className="italic"
                       id="amount"
                       {...field}
@@ -315,7 +336,6 @@ export function AddExpenseDialog({
             <div className="flex justify-between gap-2">
               <Button
                 type="submit"
-                onClick={() => console.log(form.formState.errors)}
                 // onClick={() => {
                 //   const category =
                 //     selectedCategory &&
@@ -341,8 +361,20 @@ export function AddExpenseDialog({
                 Add
               </Button>
               <Button
+                type="button"
                 onClick={() => {
-                  form.reset();
+                  form.reset({
+                    title: undefined,
+                    description: "",
+                    amount: "0",
+                    paid: false,
+                    paid_by_id: null,
+                    date: undefined,
+                    category_id: "9",
+                    currency_id: "1",
+                    group_id: collection.id,
+                    created_by_id: user.id,
+                  });
                   setOpen(false);
                 }}
                 className="w-full"
