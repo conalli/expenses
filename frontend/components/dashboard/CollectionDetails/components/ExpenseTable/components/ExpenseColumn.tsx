@@ -1,9 +1,6 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal } from "lucide-react";
-import { Expense } from "../../../../../../lib/api/models";
-import { Button } from "../../../../../ui/button";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,7 +8,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../../../../../ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
+import { Expense } from "@/lib/api/models";
+import { ColumnDef } from "@tanstack/react-table";
+import { MoreHorizontal } from "lucide-react";
+import { MenuItemDelete } from "./MenuItemDelete";
 
 const amountToCurrency = (amount: number, decimals: number): string => {
   const total = amount / 10 ** decimals;
@@ -28,7 +29,9 @@ const formatServerDate = (date: string): string => {
   }).format(new Date(date));
 };
 
-export const columns: ColumnDef<Expense>[] = [
+export const columns: ColumnDef<
+  Expense & { token: string; expensePeriod: string }
+>[] = [
   {
     header: "Title",
     accessorKey: "title",
@@ -74,11 +77,11 @@ export const columns: ColumnDef<Expense>[] = [
               Edit
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => console.log("bye", expense.description)}
-            >
-              Delete
-            </DropdownMenuItem>
+            <MenuItemDelete
+              token={expense.token}
+              expense={expense}
+              expensePeriod={expense.expensePeriod}
+            />
           </DropdownMenuContent>
         </DropdownMenu>
       );
