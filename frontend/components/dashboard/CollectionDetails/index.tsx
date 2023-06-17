@@ -36,7 +36,7 @@ const expensePeriodToString = (period: ExpensePeriod): string => {
   let dateString: string;
   switch (period) {
     case "month":
-      dateString = date.getMonth().toString();
+      dateString = (1 + date.getMonth()).toString();
       break;
     case "year":
       dateString = date.getFullYear().toString();
@@ -114,7 +114,11 @@ export function CollectionDetails({
       </div>
       {isLoading && <Loader />}
       {expenses && expenses.length > 0 ? (
-        <ExpenseTable expenses={expenses} />
+        <ExpenseTable
+          token={user.token}
+          expenses={expenses}
+          expensePeriod={expensePeriodToString(expensePeriod)}
+        />
       ) : (
         <Placeholder user={user} collection={collection} />
       )}
