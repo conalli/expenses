@@ -40,8 +40,8 @@ export function MenuItemDelete({
         token,
       ]);
     },
-    onSettled: () => {
-      queryClient.invalidateQueries([
+    onSettled: async () => {
+      await queryClient.invalidateQueries([
         EXPENSES_KEY,
         expense.group.id,
         expensePeriod,
@@ -57,7 +57,10 @@ export function MenuItemDelete({
     },
   });
   return (
-    <DropdownMenuItem onClick={() => mutation.mutate()}>
+    <DropdownMenuItem
+      className="hover:cursor-pointer"
+      onClick={() => mutation.mutate()}
+    >
       Delete
     </DropdownMenuItem>
   );

@@ -102,6 +102,19 @@ const addExpense = (token: string) => {
   };
 };
 
+const defaultFields = (userID: number, collectionID: number) => ({
+  title: "",
+  description: "",
+  amount: "0",
+  paid: false,
+  paid_by_id: null,
+  date: undefined,
+  category_id: "9",
+  currency_id: "1",
+  group_id: collectionID,
+  created_by_id: userID,
+});
+
 export function AddExpenseDialog({
   user,
   expensePeriod,
@@ -118,18 +131,7 @@ export function AddExpenseDialog({
   const [open, setOpen] = useState(false);
   const form = useForm<AddExpenseRequest>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      title: "",
-      description: "",
-      amount: "0",
-      paid: false,
-      paid_by_id: null,
-      date: undefined,
-      category_id: "9",
-      currency_id: "1",
-      group_id: collection.id,
-      created_by_id: user.id,
-    },
+    defaultValues: defaultFields(user.id, collection.id),
   });
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -151,7 +153,10 @@ export function AddExpenseDialog({
         user.token,
       ]);
     },
-    // onSuccess: () => {},
+    onSuccess: () => {
+      form.reset(defaultFields(user.id, collection.id));
+      setOpen(false);
+    },
     onError: () => {
       toast({
         variant: "destructive",
@@ -336,25 +341,6 @@ export function AddExpenseDialog({
             <div className="flex justify-between gap-2">
               <Button
                 type="submit"
-                // onClick={() => {
-                //   const category =
-                //     selectedCategory &&
-                //     (JSON.parse(selectedCategory) as Category);
-                //   const currency =
-                //     selectedCurrency &&
-                //     (JSON.parse(selectedCurrency) as Currency);
-                //   mutation.mutate({
-                //     group_id: collection.id,
-                //     paid_by_id: null,
-                //     category_id: category ? category.id : 0,
-                //     currency_id: currency ? currency.id : 0,
-                //     created_by_id: user.id,
-                //     amount: 11111,
-                //     title: "",
-                //     paid: false,
-                //     date: date ?? new Date(),
-                //   });
-                // }}
                 className="flex gap-2 w-full bg-emerald-600 hover:bg-emerald-700"
               >
                 <Plus size={24} />
@@ -363,18 +349,7 @@ export function AddExpenseDialog({
               <Button
                 type="button"
                 onClick={() => {
-                  form.reset({
-                    title: undefined,
-                    description: "",
-                    amount: "0",
-                    paid: false,
-                    paid_by_id: null,
-                    date: undefined,
-                    category_id: "9",
-                    currency_id: "1",
-                    group_id: collection.id,
-                    created_by_id: user.id,
-                  });
+                  form.reset(defaultFields(user.id, collection.id));
                   setOpen(false);
                 }}
                 className="w-full"

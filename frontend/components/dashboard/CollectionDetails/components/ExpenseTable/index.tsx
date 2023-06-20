@@ -1,7 +1,20 @@
-import { Expense } from "../../../../../lib/api/models";
-import { DataTable } from "../../../../ui/data-table";
+import { DataTable } from "@/components/ui/data-table";
+import { Expense } from "@/lib/api/models";
 import { columns } from "./components/ExpenseColumn";
 
-export function ExpenseTable({ expenses }: { expenses: Expense[] }) {
-  return <DataTable columns={columns} data={expenses} />;
+export function ExpenseTable({
+  token,
+  expenses,
+  expensePeriod,
+}: {
+  token: string;
+  expenses: Expense[];
+  expensePeriod: string;
+}) {
+  const expenseWithTokens = expenses.map((e) => ({
+    ...e,
+    token,
+    expensePeriod,
+  }));
+  return <DataTable columns={columns} data={expenseWithTokens} />;
 }
