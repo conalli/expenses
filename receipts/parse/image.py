@@ -19,7 +19,7 @@ class ReceiptParser:
         return self
 
     def _parse_receipt_image(self, receipt: Image) -> str:
-        config = r'--tessdata-dir "/usr/share/tesseract-ocr/4.00/tessdata"'
+        config = r'--tessdata-dir "/usr/share/tesseract-ocr/5/tessdata"'
         file_text: str = pytesseract.image_to_string(
             receipt, self.lang, config)
         return file_text
