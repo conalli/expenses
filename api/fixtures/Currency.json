@@ -1,0 +1,22 @@
+[
+  {
+    "model": "expenses.currency",
+    "pk": 1,
+    "fields": { "name": "USD", "decimals": 2, "symbol": "$" }
+  },
+  {
+    "model": "expenses.currency",
+    "pk": 2,
+    "fields": { "name": "JPY", "decimals": 0, "symbol": "¥" }
+  },
+  {
+    "model": "expenses.currency",
+    "pk": 3,
+    "fields": { "name": "GBP", "decimals": 2, "symbol": "£" }
+  },
+  {
+    "model": "expenses.currency",
+    "pk": 4,
+    "fields": { "name": "EUR", "decimals": 2, "symbol": "€" }
+  }
+]

@@ -1,0 +1,92 @@
+[
+  {
+    "model": "expenses.category",
+    "pk": 1,
+    "fields": {
+      "title": "Misc.",
+      "group": null,
+      "public": true,
+      "created_by": null
+    }
+  },
+  {
+    "model": "expenses.category",
+    "pk": 2,
+    "fields": {
+      "title": "Food",
+      "group": null,
+      "public": true,
+      "created_by": null
+    }
+  },
+  {
+    "model": "expenses.category",
+    "pk": 3,
+    "fields": {
+      "title": "Clothing",
+      "group": null,
+      "public": true,
+      "created_by": null
+    }
+  },
+  {
+    "model": "expenses.category",
+    "pk": 4,
+    "fields": {
+      "title": "Home",
+      "group": null,
+      "public": true,
+      "created_by": null
+    }
+  },
+  {
+    "model": "expenses.category",
+    "pk": 5,
+    "fields": {
+      "title": "Electricity",
+      "group": null,
+      "public": true,
+      "created_by": null
+    }
+  },
+  {
+    "model": "expenses.category",
+    "pk": 6,
+    "fields": {
+      "title": "Gas",
+      "group": null,
+      "public": true,
+      "created_by": null
+    }
+  },
+  {
+    "model": "expenses.category",
+    "pk": 7,
+    "fields": {
+      "title": "Water",
+      "group": null,
+      "public": true,
+      "created_by": null
+    }
+  },
+  {
+    "model": "expenses.category",
+    "pk": 8,
+    "fields": {
+      "title": "Rent",
+      "group": null,
+      "public": true,
+      "created_by": null
+    }
+  },
+  {
+    "model": "expenses.category",
+    "pk": 9,
+    "fields": {
+      "title": "Car",
+      "group": null,
+      "public": true,
+      "created_by": null
+    }
+  }
+]
