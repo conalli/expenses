@@ -6,12 +6,14 @@ services:
       context: ./api
       dockerfile: Dockerfile.dev
     restart: on-failure
-    command: python manage.py runserver 0.0.0.0:8000
+    command: sh -c "python manage.py migrate && python manage.py loaddata ./fixtures/Category.json && python manage.py loaddata ./fixtures/Currency.json && python manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./api:/usr/src/api
       - static:/usr/src/api/static
     env_file:
       - .env
+    depends_on:
+      - postgres
 
   receipts:
     container_name: expenses_receipts
@@ -52,7 +54,7 @@ services:
     image: postgres
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=POSTGRES_PASSWORD
+      - POSTGRES_PASSWORD=password
     ports:
       - 5432:5432
     volumes:

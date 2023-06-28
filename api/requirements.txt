@@ -48,7 +48,7 @@ packaging==23.0
 platformdirs==2.5.4
 pluggy==1.0.0
 prompt-toolkit==3.0.36
-psycopg==3.1.9
+psycopg2==2.9.6
 pycodestyle==2.10.0
 pylint==2.15.8
 pylint-django==2.5.3
