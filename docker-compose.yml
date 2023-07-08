@@ -41,6 +41,8 @@ services:
     image: nginx:latest
     ports:
       - 80:80
+    depends_on:
+      - api
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - static:/usr/share/nginx/html/static
