@@ -5,7 +5,6 @@ from pathlib import Path
 import boto3
 import requests
 from core.permissions import IsAdminOrReadOnly
-from core.utils.queryset import default_user_queryset
 from django.db.models import Model, Q
 from django.db.models.manager import BaseManager
 from rest_framework import status, viewsets
@@ -16,6 +15,8 @@ from rest_framework.response import Response
 from ..models.expenses import Category, Currency, Expense
 from ..serializers.expenses import (CategorySerializer, CurrencySerializer,
                                     ExpenseSerializer)
+
+RECEIPTS_URL = os.environ.get("RECEIPTS_URL", "http://receipts:8001/receipts")
 
 
 class CurrencyViewSet(viewsets.ModelViewSet):
@@ -46,7 +47,7 @@ class ExpenseViewSet(viewsets.ModelViewSet):
                         aws_secret_access_key=os.environ.get("AWS_ACCESS_KEY"))
 
     def get_queryset(self) -> BaseManager[Model]:
-        return default_user_queryset(self, Expense, "created_by")
+        return Expense.objects.all()
 
     @action(detail=False, methods=["POST"])
     def receipt(self, request: Request) -> Response:
@@ -59,14 +60,18 @@ class ExpenseViewSet(viewsets.ModelViewSet):
             if receipt_file_path.suffix not in self.supported_file_extensions:
                 return Response({"result": "error", "details": "unsupported file format"}, status=status.HTTP_400_BAD_REQUEST)
             response = requests.post(
-                "http://receipts:8001/receipts", files={"receipt": receipt})
-            key = f"/{request.user}/{dt.date()}_{receipt_file_path}"
-            self.s3.meta.client.upload_fileobj(receipt, self.bucket_name, key)
-            url = self.bucket_url + key
+                RECEIPTS_URL, files={"receipt": receipt})
+            receipt_url = None
+            if request.data.get("upload"):
+                key = f"/{request.user}/{dt.date()}_{receipt_file_path}"
+                self.s3.meta.client.upload_fileobj(
+                    receipt, self.bucket_name, key)
+                receipt_url = self.bucket_url + key
+
             amount = response.json()
             title = f"New Expense - {dt.date()}"
             expense = Expense.objects.create(title=title, amount=amount.get("total"), created_by=request.user,
-                                             group_id=int(request.data.get("group_id")), currency_id=1, category_id=9, receipt_url=url)
+                                             group_id=int(request.data.get("group_id")), currency_id=2, category_id=int(request.data.get("category_id", 1)), receipt_url=receipt_url)
             return Response(ExpenseSerializer(expense).data)
         except Exception as e:
             print("ERROR", e)
