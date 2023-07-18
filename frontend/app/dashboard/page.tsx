@@ -11,11 +11,16 @@ import { CollectionList } from "@/components/dashboard/CollectionList";
 import { Loader } from "@/components/ui/loading/Loader";
 import { useToast } from "@/components/ui/use-toast";
 import { useUser } from "@/hooks/useUser";
-import { Category, Collection, Currency } from "@/lib/api/models";
+import {
+  Category,
+  Collection,
+  Currency,
+  UserWithToken,
+} from "@/lib/api/models";
 import { apiURL } from "@/lib/api/url";
 import { CATEGORIES_KEY, CURRENCIES_KEY } from "@/lib/query-keys";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const getCurrencies = (token?: string) => {
   return async () => {
@@ -41,10 +46,19 @@ const getCategories = (token?: string) => {
   };
 };
 
+const initialCollection = (
+  user: UserWithToken | undefined
+): Collection | null => {
+  if (user && user.collections.length >= 1) {
+    return user.collections[0];
+  }
+  return null;
+};
+
 export default function Dashboard() {
   const { user, collections } = useUser();
   const [selectedCollection, setSelectedCollection] =
-    useState<Collection | null>(null);
+    useState<Collection | null>(initialCollection(user));
   const [expensePeriod, setExpensePeriod] = useState<ExpensePeriod>("month");
   const { toast } = useToast();
   const handlePeriodChange = (period: ExpensePeriod) => {
@@ -76,13 +90,6 @@ export default function Dashboard() {
       });
     },
   });
-
-  useEffect(() => {
-    if (!user) return;
-    if (user.collections.length >= 1 && !selectedCollection) {
-      setSelectedCollection(user.collections[0]);
-    }
-  }, [selectedCollection, user]);
 
   const handleSelectCollection = (collection: Collection): void => {
     setSelectedCollection(collection);
