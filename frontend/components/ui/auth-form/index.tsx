@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { AuthResponse } from "@/lib/api/response";
+import { apiURL } from "@/lib/api/url";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -57,7 +58,7 @@ export default function AuthForm({ variant }: { variant: AuthFormVariant }) {
 
   const onSignUpSubmit = async (values: AuthRequest) => {
     try {
-      const response = await fetch("/api/signup/", {
+      const response = await fetch(apiURL("/signup/"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -80,7 +81,7 @@ export default function AuthForm({ variant }: { variant: AuthFormVariant }) {
 
   const onSignInSubmit = async (values: AuthRequest) => {
     try {
-      const response = await fetch("/api/token/", {
+      const response = await fetch(apiURL("/token/"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

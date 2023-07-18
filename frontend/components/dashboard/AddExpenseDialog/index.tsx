@@ -17,6 +17,7 @@ import {
   Expense,
   UserWithToken,
 } from "@/lib/api/models";
+import { apiURL } from "@/lib/api/url";
 import { EXPENSES_KEY } from "@/lib/query-keys";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -92,7 +93,7 @@ const addExpense = (token: string) => {
       amount,
       date: format(data.date, "yyyy-MM-dd"),
     };
-    const res = await fetch("/api/expense/", {
+    const res = await fetch(apiURL("/expense/"), {
       method: "POST",
       headers: {
         Authorization: `Token ${token}`,

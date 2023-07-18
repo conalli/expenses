@@ -1,3 +1,4 @@
+import { apiURL } from "@/lib/api/url";
 import { EXPENSES_KEY } from "@/lib/query-keys";
 import { useQuery } from "@tanstack/react-query";
 import { Collection, Expense, UserWithToken } from "../../../lib/api/models";
@@ -14,11 +15,14 @@ import { Placeholder } from "./components/ExpenseTable/Placeholder";
 
 const getGroupExpenses = (token: string, groupID: number, params = "") => {
   return async (): Promise<Expense[]> => {
-    const response = await fetch(`/api/group/${groupID}/expenses${params}`, {
-      headers: {
-        Authorization: `Token ${token}`,
-      },
-    });
+    const response = await fetch(
+      apiURL(`/group/${groupID}/expenses${params}`),
+      {
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      }
+    );
     if (response.status !== 200) throw new Error("OMG");
     return response.json() as Promise<Expense[]>;
   };

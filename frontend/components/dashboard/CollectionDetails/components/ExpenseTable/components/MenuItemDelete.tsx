@@ -1,6 +1,7 @@
 "use client";
 import { useToast } from "@/components/ui/use-toast";
 import { Expense } from "@/lib/api/models";
+import { apiURL } from "@/lib/api/url";
 import { EXPENSES_KEY } from "@/lib/query-keys";
 import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -8,7 +9,7 @@ import { X } from "lucide-react";
 
 const deleteExpense = (token: string, expenseID: number) => {
   return async () => {
-    const res = await fetch(`/api/expense/${expenseID}/`, {
+    const res = await fetch(apiURL(`/expense/${expenseID}/`), {
       method: "DELETE",
       headers: {
         Authorization: `Token ${token}`,

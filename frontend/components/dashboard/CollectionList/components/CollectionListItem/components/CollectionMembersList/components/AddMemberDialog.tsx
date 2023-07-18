@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Collection } from "@/lib/api/models";
+import { apiURL } from "@/lib/api/url";
 import { COLLECTIONS_KEY } from "@/lib/query-keys";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { PlusCircle } from "lucide-react";
@@ -16,7 +17,7 @@ import { useState } from "react";
 
 const addMemberToCollection = (token: string, collectionID: number) => {
   return async (username: string) => {
-    const res = await fetch(`/api/group/${collectionID}/members`, {
+    const res = await fetch(apiURL(`/group/${collectionID}/members`), {
       method: "POST",
       headers: {
         Authorization: `Token ${token}`,

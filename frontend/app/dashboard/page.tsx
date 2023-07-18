@@ -12,13 +12,14 @@ import { Loader } from "@/components/ui/loading/Loader";
 import { useToast } from "@/components/ui/use-toast";
 import { useUser } from "@/hooks/useUser";
 import { Category, Collection, Currency } from "@/lib/api/models";
+import { apiURL } from "@/lib/api/url";
 import { CATEGORIES_KEY, CURRENCIES_KEY } from "@/lib/query-keys";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
 const getCurrencies = (token?: string) => {
   return async () => {
-    const res = await fetch("/api/currency/", {
+    const res = await fetch(apiURL("/currency/"), {
       headers: {
         Authorization: `Token ${token}`,
       },
@@ -30,7 +31,7 @@ const getCurrencies = (token?: string) => {
 
 const getCategories = (token?: string) => {
   return async () => {
-    const res = await fetch("/api/category/", {
+    const res = await fetch(apiURL("/category/"), {
       headers: {
         Authorization: `Token ${token}`,
       },

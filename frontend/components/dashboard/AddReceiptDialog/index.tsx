@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { Category, Collection, UserWithToken } from "@/lib/api/models";
+import { apiURL } from "@/lib/api/url";
 import { EXPENSES_KEY } from "@/lib/query-keys";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Camera, Plus } from "lucide-react";
@@ -37,7 +38,7 @@ const addReceipt = (token: string) => {
     formData.set("receipt", data.receipt);
     formData.set("group_id", String(data.collectionID));
     formData.set("category_id", String(data.categoryID));
-    const res = await fetch(`/api/expense/receipt/`, {
+    const res = await fetch(apiURL(`/expense/receipt/`), {
       method: "POST",
       headers: {
         Authorization: `Token ${token}`,

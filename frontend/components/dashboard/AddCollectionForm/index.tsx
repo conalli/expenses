@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { AddCollectionResponse } from "@/lib/api/response";
+import { apiURL } from "@/lib/api/url";
 import { COLLECTIONS_KEY } from "@/lib/query-keys";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -30,8 +31,7 @@ type AddCollectionData = {
 
 const addUserCollection = (token: string) => {
   return async (data: AddCollectionData): Promise<AddCollectionResponse> => {
-    console.log("TKN", token);
-    const res = await fetch("/api/group/", {
+    const res = await fetch(apiURL("/group/"), {
       method: "POST",
       headers: { Authorization: `Token ${token}` },
       body: JSON.stringify(data),

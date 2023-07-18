@@ -5,6 +5,7 @@ import {
   userFromAuthResponse,
 } from "@/lib/api/models";
 import { AuthResponse } from "@/lib/api/response";
+import { apiURL } from "@/lib/api/url";
 import { COLLECTIONS_KEY } from "@/lib/query-keys";
 import { UseQueryResult, useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter } from "next/navigation";
@@ -38,7 +39,7 @@ const getSessionUser = (): AuthResponse | null => {
 const getCollections = (token?: string) => {
   if (!token) return;
   return async (): Promise<Collection[]> => {
-    const response = await fetch("/api/group/", {
+    const response = await fetch(apiURL("/group/"), {
       headers: {
         Authorization: `Token ${token}`,
       },
