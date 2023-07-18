@@ -91,7 +91,7 @@ WSGI_APPLICATION = "expensemanager.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "postgres",
+        "NAME": os.environ.get("DB_NAME"),
         "USER": os.environ.get("PG_USER"),
         "PASSWORD": os.environ.get("PG_PASS"),
         "HOST": os.environ.get("PG_HOST"),
