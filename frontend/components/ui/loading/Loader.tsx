@@ -1,8 +1,24 @@
-export function Loader() {
+export function Loader({
+  color,
+  containerStyles,
+  spinnerStyles,
+}: {
+  color?: string;
+  containerStyles?: string;
+  spinnerStyles?: string;
+}) {
+  let spinnerColor = color ?? "text-blue-600";
+  let container = containerStyles ?? "";
+  let spinner = spinnerStyles ?? "";
   return (
-    <div className="flex justify-center items-center p-10">
+    <div className={"flex justify-center items-center " + container}>
       <div
-        className="animate-spin inline-block w-6 h-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full"
+        className={
+          "animate-spin inline-block w-6 h-6 border-[3px] border-current border-t-transparent rounded-full selection:" +
+          spinnerColor +
+          " " +
+          spinner
+        }
         role="status"
         aria-label="loading"
       >

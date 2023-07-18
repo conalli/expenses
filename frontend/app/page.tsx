@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -7,7 +8,7 @@ export default function Home() {
         Manage your Expenses.
       </h1>
       <h1 className="text-6xl text-emerald-600 font-semibold pb-4">
-        Manage your life.
+        Take control of your life.
       </h1>
       <Image
         src="/home_art/expenses.jpg"
@@ -15,9 +16,12 @@ export default function Home() {
         width={900}
         height={600}
       />
-      <p className="text-lg">
-        Sign up to get started tracking your expenses today.
-      </p>
+      <div className="flex">
+        <Link href="/signup" className="font-bold underline text-lg px-2">
+          Sign up
+        </Link>
+        <p className="text-lg">to get started tracking your expenses today.</p>
+      </div>
       <p className="text-lg">
         Input your expenses, or just take a picture of your receipts to quickly
         get started.

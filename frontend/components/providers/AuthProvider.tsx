@@ -7,14 +7,22 @@ import {
 import { AuthResponse } from "@/lib/api/response";
 import { COLLECTIONS_KEY } from "@/lib/query-keys";
 import { UseQueryResult, useQuery } from "@tanstack/react-query";
-import { usePathname } from "next/navigation";
-import { ReactNode, createContext, useEffect, useMemo, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import {
+  ReactNode,
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 type AuthContext = {
   user?: UserWithToken;
   isError: boolean;
   isLoading: boolean;
   collections: UseQueryResult<Collection[], unknown>;
+  logout: () => void;
 };
 
 export const AuthContext = createContext<AuthContext>({} as AuthContext);
@@ -42,11 +50,14 @@ const getCollections = (token?: string) => {
   };
 };
 
+const ALLOWED_PATHS = ["/", "/signin", "/signup"];
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserWithToken>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
   const pathname = usePathname();
+  const router = useRouter();
   const collections = useQuery<Collection[]>({
     queryKey: [COLLECTIONS_KEY, user?.token],
     queryFn: getCollections(user?.token),
@@ -59,13 +70,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
   });
 
+  const logout = useCallback(() => {
+    window.sessionStorage.removeItem("EXPENSES_USER");
+    setUser(undefined);
+    router.push("/");
+  }, [router]);
+
   useEffect(() => {
     if (user !== undefined) return;
     setIsLoading(true);
     const data = getSessionUser();
     if (!data) {
-      const allowedPaths = ["/", "/signin", "/signup"];
-      if (!allowedPaths.includes(pathname)) {
+      if (!ALLOWED_PATHS.includes(pathname)) {
         setIsLoading(false);
         setIsError(true);
         window.location.assign("/");
@@ -82,8 +98,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isError,
       isLoading,
       user,
+      logout,
     }),
-    [collections, isError, isLoading, user]
+    [collections, isError, isLoading, logout, user]
   );
   return (
     <AuthContext.Provider value={authMemo}>{children}</AuthContext.Provider>
