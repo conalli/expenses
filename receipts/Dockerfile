@@ -17,4 +17,4 @@ COPY . .
 
 EXPOSE 8001
 
-CMD ["gunicorn", "--bind", ":8001", "--workers", "2", "wsgi:create_app()"]
+CMD ["gunicorn", "--bind", ":8001", "--workers", "2", "wsgi:create_app()", "&&", "celery", "-A", "expensemanager", "worker", "-l", "info", "&&", "celery", "-A", "expensemanager", "beat", "-l", "info", "-S", "django"]
