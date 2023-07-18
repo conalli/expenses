@@ -7,9 +7,13 @@ type PlaceholderProps = {
   collection: Collection;
 };
 
+type PlaceholderData = Expense & { token: string; expensePeriod: string };
+
 export function Placeholder({ user, collection }: PlaceholderProps) {
-  const placeholderExpenses: Expense[] = [
+  const placeholderExpenses: PlaceholderData[] = [
     {
+      token: "",
+      expensePeriod: "1",
       id: 0,
       title: "Nothing",
       description:
