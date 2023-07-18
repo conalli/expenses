@@ -4,7 +4,7 @@ ENV PYTHONUNBUFFERED 1
 
 WORKDIR /usr/src/api
 
-RUN apt install libpq-dev
+RUN apt-get update && apt-get install libpq-dev
 
 COPY ./requirements.txt .
 
