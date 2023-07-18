@@ -4,7 +4,7 @@ ENV PYTHONUNBUFFERED 1
 
 WORKDIR /usr/src/api
 
-RUN apt-get update && apt-get -y install gcc && apt-get -y install libpq-dev && apt-get -y install python-dev
+RUN apt-get update && apt-get -y install gcc && apt-get -y install libpq-dev && apt-get -y install python3-dev
 
 COPY ./requirements.txt .
 
