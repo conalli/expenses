@@ -60,7 +60,7 @@ export function DeleteCollectionDialog({
       <DialogTrigger
         className={
           isSelected
-            ? "bg-red-500 hover:bg-red-600 rounded text-white inline-block"
+            ? "bg-red-500 hover:bg-red-500/90 rounded text-white inline-block"
             : " hidden "
         }
       >

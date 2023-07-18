@@ -22,7 +22,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <Providers>
           <nav className="min-w-screen h-[80px] px-8 flex items-center justify-between border-b-2">
-            <Link className="font-bold text-xl text-stone-600" href="/">
+            <Link className="font-bold text-xl text-stone-700" href="/">
               Expenses.
             </Link>
             <NavLinks />

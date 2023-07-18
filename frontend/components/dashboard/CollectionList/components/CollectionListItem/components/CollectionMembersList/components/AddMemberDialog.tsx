@@ -17,7 +17,7 @@ import { useState } from "react";
 
 const addMemberToCollection = (token: string, collectionID: number) => {
   return async (username: string) => {
-    const res = await fetch(apiURL(`/group/${collectionID}/members`), {
+    const res = await fetch(apiURL(`/group/${collectionID}/members/`), {
       method: "POST",
       headers: {
         Authorization: `Token ${token}`,
@@ -58,7 +58,7 @@ export function AddMemberDialog({
       <DialogTrigger
         className={
           isSelected
-            ? "text-emerald-600 hover:text-emerald-500 rounded  inline-block"
+            ? "text-emerald-500 hover:text-emerald-500/90 rounded  inline-block"
             : " hidden "
         }
       >

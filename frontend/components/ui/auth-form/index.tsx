@@ -15,8 +15,11 @@ import { AuthResponse } from "@/lib/api/response";
 import { apiURL } from "@/lib/api/url";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { Dialog, DialogContent } from "../dialog";
+import { Loader } from "../loading/Loader";
 import { useToast } from "../use-toast";
 
 type AuthFormVariant = "Sign in" | "Sign up";
@@ -44,6 +47,7 @@ const formSchema = z.object({
 });
 
 export default function AuthForm({ variant }: { variant: AuthFormVariant }) {
+  const [isLoading, setIsLoading] = useState(false);
   const form = useForm<AuthRequest>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -57,6 +61,7 @@ export default function AuthForm({ variant }: { variant: AuthFormVariant }) {
   const { toast } = useToast();
 
   const onSignUpSubmit = async (values: AuthRequest) => {
+    setIsLoading(true);
     try {
       const response = await fetch(apiURL("/signup/"), {
         method: "POST",
@@ -65,6 +70,7 @@ export default function AuthForm({ variant }: { variant: AuthFormVariant }) {
         },
         body: JSON.stringify(values),
       });
+      setIsLoading(false);
       if (response.status === 200) {
         router.push("/signin");
       }
@@ -80,6 +86,7 @@ export default function AuthForm({ variant }: { variant: AuthFormVariant }) {
   };
 
   const onSignInSubmit = async (values: AuthRequest) => {
+    setIsLoading(true);
     try {
       const response = await fetch(apiURL("/token/"), {
         method: "POST",
@@ -88,6 +95,7 @@ export default function AuthForm({ variant }: { variant: AuthFormVariant }) {
         },
         body: JSON.stringify(values),
       });
+      setIsLoading(false);
       if (response.status === 200) {
         const res = (await response.json()) as AuthResponse;
         await window.sessionStorage.setItem(
@@ -163,6 +171,11 @@ export default function AuthForm({ variant }: { variant: AuthFormVariant }) {
           <Button type="submit">{variant}</Button>
         </form>
       </Form>
+      <Dialog open={isLoading}>
+        <DialogContent className="h-[20vh] w-[20vw] flex justify-center items-center">
+          <Loader color="text-emerald-600" />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

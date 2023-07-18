@@ -97,8 +97,8 @@ export default function Dashboard() {
   if (!user) return null;
   return (
     <main className="">
-      <div className="grid grid-cols-10">
-        <div className="col-start-1 col-span-2 px-8 py-4 flex flex-col gap-4 bg-stone-100">
+      <div className="grid grid-cols-10 grid-rows-[1fr,9fr]">
+        <div className="min-h-[max(calc(100vh-80px),100%)] col-start-1 col-span-2 row-start-1 row-span-2 px-8 py-4 flex flex-col gap-4 bg-stone-100 border-r-2">
           <h2 className="font-bold text-2xl">{user.username}</h2>
           <div className="py-4">
             <AddCollectionForm token={user.token} />
@@ -116,26 +116,33 @@ export default function Dashboard() {
             )}
           </div>
         </div>
-        <div className="col-start-5 col-span-4 py-4">
-          <div className="z-10">
-            {selectedCollection && categories.data && currencies.data && (
-              <div className="flex gap-2">
-                <AddExpenseDialog
-                  user={user}
-                  expensePeriod={expensePeriod}
-                  collection={selectedCollection}
-                  categories={categories.data}
-                  currencies={currencies.data}
-                />
-                <AddReceiptDialog
-                  user={user}
-                  expensePeriod={expensePeriod}
-                  collection={selectedCollection}
-                  categories={categories.data}
-                />
-              </div>
-            )}
-          </div>
+        <div className="row-start-1 row-span-1 col-start-3 col-span-8">
+          {selectedCollection && categories.data && currencies.data && (
+            <div className="flex gap-2 items-center py-4 px-8 bg-stone-50 border-b-2">
+              <h2 className="text-xl text-stone-700 font-bold">
+                {selectedCollection.name.toUpperCase()}
+              </h2>
+              <span className="text-stone-700/20 px-4">|</span>
+              <h2 className="text-xl text-stone-700 font-bold pr-4">
+                Actions:
+              </h2>
+              <AddExpenseDialog
+                user={user}
+                expensePeriod={expensePeriod}
+                collection={selectedCollection}
+                categories={categories.data}
+                currencies={currencies.data}
+              />
+              <AddReceiptDialog
+                user={user}
+                expensePeriod={expensePeriod}
+                collection={selectedCollection}
+                categories={categories.data}
+              />
+            </div>
+          )}
+        </div>
+        <div className="row-start-2 col-start-5 col-span-4 pb-8">
           {selectedCollection && (
             <CollectionDetails
               collection={selectedCollection}

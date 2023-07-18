@@ -25,7 +25,7 @@ export function CollectionListItem({
         <CardHeader>
           <CardTitle>
             <div className="flex justify-between">
-              <h5>{collection.name}</h5>
+              <h5>{collection.name.toUpperCase()}</h5>
               <DeleteCollectionDialog
                 token={token}
                 collection={collection}
