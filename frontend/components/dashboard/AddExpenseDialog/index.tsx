@@ -8,6 +8,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Loader } from "@/components/ui/loading/Loader";
 import { useToast } from "@/components/ui/use-toast";
 import {
   Category,
@@ -85,8 +86,10 @@ const schema = z.object({
 
 const addExpense = (token: string) => {
   return async (data: AddExpenseRequest) => {
+    const amount = Number(data.amount);
     const cleanedData = {
       ...data,
+      amount,
       date: format(data.date, "yyyy-MM-dd"),
     };
     const res = await fetch("/api/expense/", {
@@ -109,7 +112,7 @@ const defaultFields = (userID: number, collectionID: number) => ({
   paid: false,
   paid_by_id: null,
   date: undefined,
-  category_id: "9",
+  category_id: "1",
   currency_id: "1",
   group_id: collectionID,
   created_by_id: userID,
@@ -168,12 +171,12 @@ export function AddExpenseDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
-        <Button className="bg-emerald-600 hover:bg-emerald-700 text-white">
+        <div className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background h-10 py-2 px-4 text-primary-foreground hover:bg-emerald-600/90 bg-emerald-600">
           <span className="flex gap-2 items-center">
             <Plus size={24} />
             Add Expense
           </span>
-        </Button>
+        </div>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -187,14 +190,22 @@ export function AddExpenseDialog({
         </DialogHeader>
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit((data) =>
+            onSubmit={form.handleSubmit((data) => {
+              const curr = currencies.find(
+                (c) => c.id === Number(data.currency_id)
+              );
+              let amount = Number(data.amount);
+              if (curr && curr.decimals > 0) {
+                amount *= 10 ** curr.decimals;
+              }
               mutation.mutate({
                 ...data,
+                amount: String(amount),
                 paid_by_id: null,
                 group_id: collection.id,
                 created_by_id: user.id,
-              })
-            )}
+              });
+            })}
           >
             <FormField
               control={form.control}
@@ -283,7 +294,7 @@ export function AddExpenseDialog({
                         {currencies.map((c) => {
                           return (
                             <SelectItem key={c.id} value={String(c.id)}>
-                              {c.symbol}
+                              {c.symbol} - {c.name}
                             </SelectItem>
                           );
                         })}
@@ -308,7 +319,9 @@ export function AddExpenseDialog({
                       placeholder="amount"
                       type="number"
                       step={generateStep(
-                        currencies[Number(form.getValues()["currency_id"]) || 0]
+                        currencies.find(
+                          (c) => c.id == Number(form.getValues()["currency_id"])
+                        )
                       )}
                       className="italic"
                       id="amount"
@@ -338,13 +351,16 @@ export function AddExpenseDialog({
                 </FormItem>
               )}
             />
-            <div className="flex justify-between gap-2">
+            <div className="flex justify-between gap-2 pt-4">
               <Button
                 type="submit"
-                className="flex gap-2 w-full bg-emerald-600 hover:bg-emerald-700"
+                className="flex gap-2 w-full bg-emerald-600 hover:bg-emerald-600/90"
               >
                 <Plus size={24} />
                 Add
+                {mutation.isLoading && (
+                  <Loader color="text-white" containerStyles="py-4" />
+                )}
               </Button>
               <Button
                 type="button"

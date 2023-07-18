@@ -93,15 +93,15 @@ export function CollectionDetails({
   };
 
   return (
-    <div>
-      <div className="py-6 flex items-center">
-        <h1 className="inline text-2xl font-bold py-6 grow">
+    <>
+      <div className="py-2 flex items-center">
+        <h1 className="inline text-2xl font-bold py-4 grow">
           {collection.name}
         </h1>
         <p className="inline px-4 text-sm text-muted-foreground">
           created: {createdDate(collection.created_at)}
         </p>
-        <Select value={expensePeriod} onValueChange={handlePeriodSelect}>
+        <Select onValueChange={handlePeriodSelect}>
           <SelectTrigger>
             <SelectValue placeholder={`This month - ${currentMonth}`} />
           </SelectTrigger>
@@ -117,11 +117,11 @@ export function CollectionDetails({
         <ExpenseTable
           token={user.token}
           expenses={expenses}
-          expensePeriod={expensePeriodToString(expensePeriod)}
+          expensePeriod={expensePeriod ?? ""}
         />
       ) : (
         <Placeholder user={user} collection={collection} />
       )}
-    </div>
+    </>
   );
 }

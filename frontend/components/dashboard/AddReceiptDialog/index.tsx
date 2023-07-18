@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Loader } from "@/components/ui/loading/Loader";
 import {
   Select,
   SelectContent,
@@ -16,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useToast } from "@/components/ui/use-toast";
 import { Category, Collection, UserWithToken } from "@/lib/api/models";
 import { EXPENSES_KEY } from "@/lib/query-keys";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -33,8 +35,9 @@ const addReceipt = (token: string) => {
   return async (data: AddReceiptData) => {
     const formData = new FormData();
     formData.set("receipt", data.receipt);
+    formData.set("group_id", String(data.collectionID));
     formData.set("category_id", String(data.categoryID));
-    const res = await fetch(`/api/group/${data.collectionID}/receipts`, {
+    const res = await fetch(`/api/expense/receipt/`, {
       method: "POST",
       headers: {
         Authorization: `Token ${token}`,
@@ -60,6 +63,7 @@ export function AddReceiptDialog({
   const [open, setOpen] = useState(false);
   const [file, setFile] = useState<File>();
   const [selectedCategory, setSelectedCategory] = useState<string>();
+  const { toast } = useToast();
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: addReceipt(user.token),
@@ -78,19 +82,28 @@ export function AddReceiptDialog({
         expensePeriod,
         user.token,
       ]);
+      setOpen(false);
     },
-    // onSuccess: () => {},
-    // onError: () => {},
+    onSuccess: () => {
+      setOpen(false);
+    },
+    onError: () => {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "could not create new expense",
+      });
+    },
   });
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
-        <Button className="">
+        <div className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background h-10 py-2 px-4 bg-primary text-primary-foreground hover:bg-primary/90">
           <span className="flex gap-2 items-center">
             <Camera size={24} />
             Add By Receipt
           </span>
-        </Button>
+        </div>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -128,7 +141,7 @@ export function AddReceiptDialog({
         </Select>
         <div className="flex justify-between gap-2">
           <Button
-            disabled={!file}
+            disabled={!file || mutation.isLoading}
             onClick={() => {
               const category =
                 selectedCategory && (JSON.parse(selectedCategory) as Category);
@@ -139,12 +152,19 @@ export function AddReceiptDialog({
                 categoryID,
               });
             }}
-            className="flex gap-2 w-full bg-emerald-600 hover:bg-emerald-700"
+            className="flex gap-2 w-full bg-emerald-600 hover:bg-emerald-600/90"
           >
             <Plus size={24} />
             Add
+            {mutation.isLoading && (
+              <Loader color="text-white" containerStyles="py-4" />
+            )}
           </Button>
-          <Button onClick={() => setOpen(false)} className="w-full">
+          <Button
+            disabled={mutation.isLoading}
+            onClick={() => setOpen(false)}
+            className="w-full"
+          >
             Cancel
           </Button>
         </div>

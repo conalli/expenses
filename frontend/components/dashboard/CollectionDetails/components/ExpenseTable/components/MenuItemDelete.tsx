@@ -4,6 +4,7 @@ import { Expense } from "@/lib/api/models";
 import { EXPENSES_KEY } from "@/lib/query-keys";
 import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { X } from "lucide-react";
 
 const deleteExpense = (token: string, expenseID: number) => {
   return async () => {
@@ -14,8 +15,7 @@ const deleteExpense = (token: string, expenseID: number) => {
       },
     });
     if (res.status >= 300) throw new Error("Cant delete, OMG");
-    console.log(await res.json());
-    return (await res.json()) as { hello: string };
+    return {};
   };
 };
 
@@ -57,11 +57,14 @@ export function MenuItemDelete({
     },
   });
   return (
-    <DropdownMenuItem
-      className="hover:cursor-pointer"
-      onClick={() => mutation.mutate()}
-    >
-      Delete
+    <DropdownMenuItem className="px-1 hover:font-semibold bg-red-50 rounded">
+      <button
+        onClick={() => mutation.mutate()}
+        className="flex items-center text-red-500"
+      >
+        <X height={20} width={20} />
+        Delete
+      </button>
     </DropdownMenuItem>
   );
 }

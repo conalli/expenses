@@ -89,8 +89,8 @@ export default function Dashboard() {
   if (!user) return null;
   return (
     <main className="">
-      <div className="grid grid-cols-10 grid-rows-[5%,90%]">
-        <div className="col-start-1 col-span-2 row-span-2 px-8 py-4 flex flex-col gap-4 h-[calc(100vh-80px)] bg-stone-100">
+      <div className="grid grid-cols-10">
+        <div className="col-start-1 col-span-2 px-8 py-4 flex flex-col gap-4 bg-stone-100">
           <h2 className="font-bold text-2xl">{user.username}</h2>
           <div className="py-4">
             <AddCollectionForm token={user.token} />
@@ -108,7 +108,26 @@ export default function Dashboard() {
             )}
           </div>
         </div>
-        <div className="col-start-5 col-span-4 row-start-2 py-8">
+        <div className="col-start-5 col-span-4 py-4">
+          <div className="z-10">
+            {selectedCollection && categories.data && currencies.data && (
+              <div className="flex gap-2">
+                <AddExpenseDialog
+                  user={user}
+                  expensePeriod={expensePeriod}
+                  collection={selectedCollection}
+                  categories={categories.data}
+                  currencies={currencies.data}
+                />
+                <AddReceiptDialog
+                  user={user}
+                  expensePeriod={expensePeriod}
+                  collection={selectedCollection}
+                  categories={categories.data}
+                />
+              </div>
+            )}
+          </div>
           {selectedCollection && (
             <CollectionDetails
               collection={selectedCollection}
@@ -116,25 +135,6 @@ export default function Dashboard() {
               expensePeriod={expensePeriod}
               setExpensePeriod={handlePeriodChange}
             />
-          )}
-        </div>
-        <div className="col-start-5 col-span-4 z-10 py-8">
-          {selectedCollection && categories.data && currencies.data && (
-            <div className="flex gap-2">
-              <AddExpenseDialog
-                user={user}
-                expensePeriod={expensePeriod}
-                collection={selectedCollection}
-                categories={categories.data}
-                currencies={currencies.data}
-              />
-              <AddReceiptDialog
-                user={user}
-                expensePeriod={expensePeriod}
-                collection={selectedCollection}
-                categories={categories.data}
-              />
-            </div>
           )}
         </div>
       </div>

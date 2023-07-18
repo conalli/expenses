@@ -96,7 +96,7 @@ export function AddCollectionForm({ token }: { token: string }) {
           <Button
             type="submit"
             disabled={collections.isLoading}
-            className="bg-emerald-600 hover:bg-emerald-700 flex gap-2"
+            className="bg-emerald-600 hover:bg-emerald-600/90 flex gap-2"
           >
             <Plus size={20} />
             Add

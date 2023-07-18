@@ -82,8 +82,8 @@ export function AddMemberDialog({
         />
         <div className="flex justify-between gap-2">
           <Button
-            className="w-full bg-emerald-600 hover:bg-emerald-700"
-            disabled={memberUsername.length > 3}
+            className="w-full bg-emerald-600 hover:bg-emerald-600/90"
+            disabled={memberUsername.length < 3}
             onClick={() => mutation.mutate(memberUsername)}
           >
             Invite
