@@ -1,17 +1,14 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Expense } from "@/lib/api/models";
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal } from "lucide-react";
-import { MenuItemDelete } from "./row-actions/delete";
+import { ActionMenu } from "./action-menu";
 
 const amountToCurrency = (amount: number, decimals: number): string => {
   const total = amount / 10 ** decimals;
@@ -34,10 +31,32 @@ export const columns: ColumnDef<
   {
     header: "Title",
     accessorKey: "title",
+    cell: ({ getValue }) => (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>
+            <p className="max-w-[15ch] font-bold text-slate-700/80 truncate">
+              {getValue<string>()}
+            </p>
+          </TooltipTrigger>
+          <TooltipContent>{getValue<string>()}</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    ),
   },
   {
     header: "Description",
     accessorKey: "description",
+    cell: ({ getValue }) => (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>
+            <p className="max-w-[15ch] truncate">{getValue<string>()}</p>
+          </TooltipTrigger>
+          <TooltipContent>{getValue<string>()}</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    ),
   },
   {
     header: "Amount",
@@ -62,28 +81,8 @@ export const columns: ColumnDef<
     id: "actions",
     cell: ({ row }) => {
       const expense = row.original;
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            {/* <DropdownMenuItem onClick={() => console.log("hi", expense.title)}>
-              Edit
-            </DropdownMenuItem> */}
-            <DropdownMenuSeparator />
-            <MenuItemDelete
-              token={expense.token}
-              expense={expense}
-              expensePeriod={expense.expensePeriod}
-            />
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
+      if (expense.id === 0) return null;
+      return <ActionMenu expense={expense} />;
     },
   },
 ];

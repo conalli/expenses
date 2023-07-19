@@ -1,15 +1,14 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/loading/spinner";
 import { useToast } from "@/components/ui/use-toast";
-import { useDialog } from "@/hooks/use-dialog";
 import { Expense } from "@/lib/api/models";
 import { apiURL } from "@/lib/api/url";
 import { EXPENSES_KEY } from "@/lib/query-keys";
@@ -32,17 +31,20 @@ const deleteExpense = (token: string, expenseID: number) => {
 };
 
 type DeleteExpenseDialogProps = {
+  setOpen: (open: boolean) => void;
+  setMenuOpen: (close: boolean) => void;
   token: string;
   expense: Expense;
   expensePeriod: string;
 };
 
 export function DeleteExpenseDialog({
+  setOpen,
+  setMenuOpen,
   token,
   expense,
   expensePeriod,
 }: DeleteExpenseDialogProps) {
-  const { open, setOpen, type } = useDialog();
   const [deleteText, setDeleteText] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -64,6 +66,10 @@ export function DeleteExpenseDialog({
         token,
       ]);
     },
+    onSuccess: () => {
+      setOpen(false);
+      setMenuOpen(false);
+    },
     onError: () => {
       toast({
         variant: "destructive",
@@ -72,46 +78,49 @@ export function DeleteExpenseDialog({
       });
     },
   });
+
   return (
-    <Dialog
-      open={open && type === "delete-expense"}
-      onOpenChange={(open) => {
-        console.log("called");
-        setOpen(open, "delete-expense");
-      }}
-    >
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle className="pb-4">Are you sure?</DialogTitle>
-          <DialogDescription>
-            This will permanently delete
-            <strong> {expense.title} </strong>.
-          </DialogDescription>
-          <DialogDescription>
-            To delete, type &quot;
-            <i>{DELETE_EXPENSE_TEXT}</i>&quot; in the box below.
-          </DialogDescription>
-        </DialogHeader>
-        <Input
-          placeholder={DELETE_EXPENSE_TEXT}
-          value={deleteText}
-          onChange={(e) => setDeleteText(e.target.value)}
-          className="italic"
-        />
-        <div className="flex justify-between gap-2">
-          <Button
-            variant="destructive"
-            className="w-full"
-            disabled={DELETE_EXPENSE_TEXT !== deleteText}
-            onClick={() => mutation.mutate()}
-          >
-            Delete
-          </Button>
-          <Button onClick={() => setOpen(false, null)} className="w-full">
-            Cancel
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+    <DialogContent onCloseAutoFocus={(e) => e.preventDefault()}>
+      <DialogHeader>
+        <DialogTitle className="pb-4">Are you sure?</DialogTitle>
+        <DialogDescription>
+          This will permanently delete
+          <strong> {expense.title} </strong>.
+        </DialogDescription>
+        <DialogDescription>
+          To delete, type &quot;
+          <i>{DELETE_EXPENSE_TEXT}</i>&quot; in the box below.
+        </DialogDescription>
+      </DialogHeader>
+      <Input
+        placeholder={DELETE_EXPENSE_TEXT}
+        value={deleteText}
+        onChange={(e) => setDeleteText(e.target.value)}
+        className="italic"
+      />
+      <div className="flex justify-between gap-2">
+        <Button
+          variant="destructive"
+          className="w-full"
+          disabled={DELETE_EXPENSE_TEXT !== deleteText || mutation.isLoading}
+          onClick={() => mutation.mutate()}
+        >
+          Delete
+          {mutation.isLoading && (
+            <Spinner color="text-white" containerStyles="py-4" />
+          )}
+        </Button>
+        <Button
+          disabled={mutation.isLoading}
+          onClick={() => {
+            setOpen(false);
+            setMenuOpen(false);
+          }}
+          className="w-full"
+        >
+          Cancel
+        </Button>
+      </div>
+    </DialogContent>
   );
 }

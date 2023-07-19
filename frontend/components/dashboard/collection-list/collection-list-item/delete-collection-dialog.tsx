@@ -61,7 +61,7 @@ export function DeleteCollectionDialog({
         className={
           isSelected
             ? "bg-red-500 hover:bg-red-600 rounded text-white inline-block"
-            : " hidden "
+            : "invisible"
         }
       >
         <X size={20} />

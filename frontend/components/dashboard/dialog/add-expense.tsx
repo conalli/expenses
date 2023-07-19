@@ -1,4 +1,4 @@
-import { DatePicker } from "@/components/ui/date-picker";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Form,
   FormControl,
@@ -8,9 +8,22 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/loading/spinner";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
-import { useDialog } from "@/hooks/use-dialog";
 import {
   Category,
   Collection,
@@ -19,13 +32,16 @@ import {
   UserWithToken,
 } from "@/lib/api/models";
 import { apiURL } from "@/lib/api/url";
+import { generateStep } from "@/lib/currency";
 import { EXPENSES_KEY } from "@/lib/query-keys";
+import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { Plus } from "lucide-react";
+import { CalendarIcon, Plus } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
+import { z } from "zod";
 import { Button } from "../../ui/button";
 import {
   Dialog,
@@ -35,33 +51,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../../ui/dialog";
-import { Input } from "../../ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../ui/select";
-import { Textarea } from "../../ui/textarea";
 import { ExpensePeriod } from "../collection-details";
-
-const generateStep = (currency?: Currency): number => {
-  if (!currency) return 0.01;
-  let step: number;
-  switch (currency.decimals) {
-    case 0:
-      step = 1;
-      break;
-    case 3:
-      step = 0.001;
-      break;
-    default:
-      step = 0.01;
-      break;
-  }
-  return step;
-};
 
 type AddExpenseRequest = {
   title: string;
@@ -134,7 +124,7 @@ export function AddExpenseDialog({
   categories,
   currencies,
 }: AddExpenseDialogProps) {
-  const { open, setOpen, type } = useDialog();
+  const [open, setOpen] = useState(false);
   const form = useForm<AddExpenseRequest>({
     resolver: zodResolver(schema),
     defaultValues: defaultFields(user.id, collection.id),
@@ -161,7 +151,7 @@ export function AddExpenseDialog({
     },
     onSuccess: () => {
       form.reset(defaultFields(user.id, collection.id));
-      setOpen(false, null);
+      setOpen(false);
     },
     onError: () => {
       toast({
@@ -172,17 +162,14 @@ export function AddExpenseDialog({
     },
   });
   return (
-    <Dialog
-      open={open && type === "add-expense"}
-      onOpenChange={(open) => setOpen(open, "add-expense")}
-    >
-      <DialogTrigger>
-        <div className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background h-10 py-2 px-4 text-primary-foreground hover:bg-emerald-600/90 bg-emerald-600">
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button className="hover:bg-emerald-600/90 bg-emerald-600">
           <span className="flex gap-2 items-center">
             <Plus size={24} />
             Expense
           </span>
-        </div>
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -262,22 +249,25 @@ export function AddExpenseDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Category</FormLabel>
-                  <FormControl>
-                    <Select {...field} onValueChange={field.onChange}>
+                  <Select
+                    defaultValue={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Category" />
                       </SelectTrigger>
-                      <SelectContent>
-                        {categories.map((c) => {
-                          return (
-                            <SelectItem key={c.id} value={String(c.id)}>
-                              {c.title}
-                            </SelectItem>
-                          );
-                        })}
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
+                    </FormControl>
+                    <SelectContent>
+                      {categories.map((c) => {
+                        return (
+                          <SelectItem key={c.id} value={String(c.id)}>
+                            {c.title}
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
                   <FormDescription>
                     Choose a Category for your Expense.
                   </FormDescription>
@@ -291,22 +281,25 @@ export function AddExpenseDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Currency</FormLabel>
-                  <FormControl>
-                    <Select {...field} onValueChange={field.onChange}>
+                  <Select
+                    defaultValue={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Currency" />
                       </SelectTrigger>
-                      <SelectContent>
-                        {currencies.map((c) => {
-                          return (
-                            <SelectItem key={c.id} value={String(c.id)}>
-                              {c.symbol} - {c.name}
-                            </SelectItem>
-                          );
-                        })}
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
+                    </FormControl>
+                    <SelectContent>
+                      {currencies.map((c) => {
+                        return (
+                          <SelectItem key={c.id} value={String(c.id)}>
+                            {c.symbol} - {c.name}
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
                   <FormDescription>
                     Choose the Currency of your Expense.
                   </FormDescription>
@@ -345,13 +338,34 @@ export function AddExpenseDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Date</FormLabel>
-                  <FormControl>
-                    <DatePicker
-                      {...field}
-                      date={field.value}
-                      setDate={field.onChange}
-                    />
-                  </FormControl>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-[280px] justify-start text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {field.value ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                   <FormDescription>The date of your Expense.</FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -372,7 +386,7 @@ export function AddExpenseDialog({
                 type="button"
                 onClick={() => {
                   form.reset(defaultFields(user.id, collection.id));
-                  setOpen(false, null);
+                  setOpen(false);
                 }}
                 className="w-full"
               >

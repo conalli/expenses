@@ -8,37 +8,11 @@ import {
 } from "@/components/dashboard/collection-details";
 import { CollectionList } from "@/components/dashboard/collection-list";
 import { Spinner } from "@/components/ui/loading/spinner";
-import { useToast } from "@/components/ui/use-toast";
+import { useCategory } from "@/hooks/use-category";
+import { useCurrency } from "@/hooks/use-currency";
 import { useUser } from "@/hooks/use-user";
-import { Category, Collection, Currency } from "@/lib/api/models";
-import { apiURL } from "@/lib/api/url";
-import { CATEGORIES_KEY, CURRENCIES_KEY } from "@/lib/query-keys";
-import { useQuery } from "@tanstack/react-query";
+import { Collection } from "@/lib/api/models";
 import { useEffect, useState } from "react";
-
-const getCurrencies = (token?: string) => {
-  return async () => {
-    const res = await fetch(apiURL("/currency/"), {
-      headers: {
-        Authorization: `Token ${token}`,
-      },
-    });
-    if (res.status !== 200) throw new Error("OMG");
-    return (await res.json()) as Currency[];
-  };
-};
-
-const getCategories = (token?: string) => {
-  return async () => {
-    const res = await fetch(apiURL("/category/"), {
-      headers: {
-        Authorization: `Token ${token}`,
-      },
-    });
-    if (res.status !== 200) throw new Error("OMG");
-    return (await res.json()) as Category[];
-  };
-};
 
 export default function Dashboard() {
   const { user, collections } = useUser();
@@ -46,7 +20,6 @@ export default function Dashboard() {
   const [selectedCollection, setSelectedCollection] =
     useState<Collection | null>(null);
   const [expensePeriod, setExpensePeriod] = useState<ExpensePeriod>("month");
-  const { toast } = useToast();
   const handlePeriodChange = (period: ExpensePeriod) => {
     setExpensePeriod(period);
   };
@@ -57,31 +30,9 @@ export default function Dashboard() {
     }
   }, [user]);
 
-  const currencies = useQuery({
-    queryKey: [CURRENCIES_KEY, user?.token],
-    queryFn: getCurrencies(user?.token),
-    enabled: !!user,
-    onError: (_err) => {
-      toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: "could not get expense currencies",
-      });
-    },
-  });
+  const currencies = useCurrency(user);
 
-  const categories = useQuery({
-    queryKey: [CATEGORIES_KEY, user?.token],
-    queryFn: getCategories(user?.token),
-    enabled: !!user,
-    onError: (_err) => {
-      toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: "could not get collection categories",
-      });
-    },
-  });
+  const categories = useCategory(user);
 
   const handleSelectCollection = (collection: Collection): void => {
     setSelectedCollection(collection);
