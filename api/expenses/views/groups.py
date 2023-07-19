@@ -23,7 +23,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     metadata_class = GroupMetadata
 
     def get_queryset(self) -> BaseManager[Model]:
-        return default_user_queryset(self, Group, "members", "members")
+        return default_user_queryset(self, Group, "members", "members").order_by("-created_at")
 
     def get_group(self, pk: int) -> Group:
         try:
@@ -81,7 +81,7 @@ class GroupViewSet(viewsets.ModelViewSet):
         """ /group/{id}/expenses GET lists the expenses of a given group """
         query = request.query_params
         expense_filter = QueryParamParser(pk, query).to_filter()
-        expenses = Expense.objects.filter(**expense_filter)
+        expenses = Expense.objects.filter(**expense_filter).order_by("-date")
         serializer = ExpenseSerializer(expenses, many=True)
         return Response(serializer.data)
 
