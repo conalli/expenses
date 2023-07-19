@@ -1,5 +1,5 @@
 import { Collection } from "@/lib/api/models";
-import { CollectionListItem } from "./components/CollectionListItem";
+import { CollectionListItem } from "./collection-list-item";
 
 export function CollectionList({
   token,

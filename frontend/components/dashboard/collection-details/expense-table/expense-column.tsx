@@ -11,7 +11,7 @@ import {
 import { Expense } from "@/lib/api/models";
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
-import { MenuItemDelete } from "./MenuItemDelete";
+import { MenuItemDelete } from "./row-actions/delete";
 
 const amountToCurrency = (amount: number, decimals: number): string => {
   const total = amount / 10 ** decimals;

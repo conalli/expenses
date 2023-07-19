@@ -1,26 +1,21 @@
 "use client";
 
-import { AddCollectionForm } from "@/components/dashboard/AddCollectionForm";
-import { AddExpenseDialog } from "@/components/dashboard/AddExpenseDialog";
-import { AddReceiptDialog } from "@/components/dashboard/AddReceiptDialog";
+import { AddCollectionForm } from "@/components/dashboard/add-collection-form";
 import {
   CollectionDetails,
   ExpensePeriod,
-} from "@/components/dashboard/CollectionDetails";
-import { CollectionList } from "@/components/dashboard/CollectionList";
-import { Loader } from "@/components/ui/loading/Loader";
+} from "@/components/dashboard/collection-details";
+import { CollectionList } from "@/components/dashboard/collection-list";
+import { AddExpenseDialog } from "@/components/dashboard/expense-dialog";
+import { AddReceiptDialog } from "@/components/dashboard/receipt-dialog";
+import { Spinner } from "@/components/ui/loading/spinner";
 import { useToast } from "@/components/ui/use-toast";
-import { useUser } from "@/hooks/useUser";
-import {
-  Category,
-  Collection,
-  Currency,
-  UserWithToken,
-} from "@/lib/api/models";
+import { useUser } from "@/hooks/use-user";
+import { Category, Collection, Currency } from "@/lib/api/models";
 import { apiURL } from "@/lib/api/url";
 import { CATEGORIES_KEY, CURRENCIES_KEY } from "@/lib/query-keys";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const getCurrencies = (token?: string) => {
   return async () => {
@@ -46,24 +41,22 @@ const getCategories = (token?: string) => {
   };
 };
 
-const initialCollection = (
-  user: UserWithToken | undefined
-): Collection | null => {
-  if (user && user.collections.length >= 1) {
-    return user.collections[0];
-  }
-  return null;
-};
-
 export default function Dashboard() {
   const { user, collections } = useUser();
+
   const [selectedCollection, setSelectedCollection] =
-    useState<Collection | null>(initialCollection(user));
+    useState<Collection | null>(null);
   const [expensePeriod, setExpensePeriod] = useState<ExpensePeriod>("month");
   const { toast } = useToast();
   const handlePeriodChange = (period: ExpensePeriod) => {
     setExpensePeriod(period);
   };
+
+  useEffect(() => {
+    if (user && user.collections.length >= 1) {
+      return setSelectedCollection(user.collections[0]);
+    }
+  }, [user]);
 
   const currencies = useQuery({
     queryKey: [CURRENCIES_KEY, user?.token],
@@ -73,7 +66,7 @@ export default function Dashboard() {
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
-        description: "could not get user currencies",
+        description: "could not get expense currencies",
       });
     },
   });
@@ -86,7 +79,7 @@ export default function Dashboard() {
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
-        description: "could not get user currencies",
+        description: "could not get collection categories",
       });
     },
   });
@@ -105,7 +98,7 @@ export default function Dashboard() {
           </div>
           <div className="py-4">
             {collections.isLoading ? (
-              <Loader />
+              <Spinner />
             ) : (
               <CollectionList
                 token={user.token}

@@ -1,6 +1,6 @@
 import { DataTable } from "@/components/ui/data-table";
 import { Collection, Expense, User } from "@/lib/api/models";
-import { columns } from "./components/ExpenseColumn";
+import { columns } from "./expense-column";
 
 type PlaceholderProps = {
   user: User;

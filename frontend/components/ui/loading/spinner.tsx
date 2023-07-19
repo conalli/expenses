@@ -1,4 +1,4 @@
-export function Loader({
+export function Spinner({
   color,
   containerStyles,
   spinnerStyles,

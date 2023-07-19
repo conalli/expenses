@@ -1,15 +1,14 @@
 "use client";
 
-import { useUser } from "@/hooks/useUser";
+import { useUser } from "@/hooks/use-user";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "../button";
-import { UserAvatar } from "./UserAvatar";
+import { UserAvatar } from "./user-avatar";
 
 export function NavLinks() {
   const pathname = usePathname();
   const { user, logout } = useUser();
-  console.log("p", pathname);
   return (
     <ul className="flex gap-4">
       {!user ? (

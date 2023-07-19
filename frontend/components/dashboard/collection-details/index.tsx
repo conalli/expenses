@@ -2,7 +2,7 @@ import { apiURL } from "@/lib/api/url";
 import { EXPENSES_KEY } from "@/lib/query-keys";
 import { useQuery } from "@tanstack/react-query";
 import { Collection, Expense, UserWithToken } from "../../../lib/api/models";
-import { Loader } from "../../ui/loading/Loader";
+import { Spinner } from "../../ui/loading/spinner";
 import {
   Select,
   SelectContent,
@@ -10,8 +10,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../ui/select";
-import { ExpenseTable } from "./components/ExpenseTable";
-import { Placeholder } from "./components/ExpenseTable/Placeholder";
+import { ExpenseTable } from "./expense-table";
+import { Placeholder } from "./expense-table/placeholder";
 
 const getGroupExpenses = (token: string, groupID: number, params = "") => {
   return async (): Promise<Expense[]> => {
@@ -116,7 +116,7 @@ export function CollectionDetails({
           </SelectContent>
         </Select>
       </div>
-      {isLoading && <Loader />}
+      {isLoading && <Spinner />}
       {expenses && expenses.length > 0 ? (
         <ExpenseTable
           token={user.token}

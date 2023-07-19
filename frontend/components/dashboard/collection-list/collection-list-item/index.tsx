@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Collection } from "@/lib/api/models";
-import { CollectionMembersList } from "./components/CollectionMembersList";
-import { DeleteCollectionDialog } from "./components/DeleteCollectionDialog";
+import { DeleteCollectionDialog } from "./delete-collection-dialog";
+import { CollectionMembersList } from "./member-list";
 
 export function CollectionListItem({
   token,

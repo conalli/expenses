@@ -1,6 +1,6 @@
 import { DataTable } from "@/components/ui/data-table";
 import { Expense } from "@/lib/api/models";
-import { columns } from "./components/ExpenseColumn";
+import { columns } from "./expense-column";
 
 export function ExpenseTable({
   token,

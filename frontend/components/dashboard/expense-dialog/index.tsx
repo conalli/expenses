@@ -8,7 +8,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Loader } from "@/components/ui/loading/Loader";
+import { Spinner } from "@/components/ui/loading/spinner";
 import { useToast } from "@/components/ui/use-toast";
 import {
   Category,
@@ -44,7 +44,7 @@ import {
   SelectValue,
 } from "../../ui/select";
 import { Textarea } from "../../ui/textarea";
-import { ExpensePeriod } from "../CollectionDetails";
+import { ExpensePeriod } from "../collection-details";
 
 const generateStep = (currency?: Currency): number => {
   if (!currency) return 0.01;
@@ -360,7 +360,7 @@ export function AddExpenseDialog({
                 <Plus size={24} />
                 Add
                 {mutation.isLoading && (
-                  <Loader color="text-white" containerStyles="py-4" />
+                  <Spinner color="text-white" containerStyles="py-4" />
                 )}
               </Button>
               <Button

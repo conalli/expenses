@@ -19,7 +19,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Dialog, DialogContent } from "../dialog";
-import { Loader } from "../loading/Loader";
+import { Spinner } from "../loading/spinner";
 import { useToast } from "../use-toast";
 
 type AuthFormVariant = "Sign in" | "Sign up";
@@ -173,7 +173,7 @@ export default function AuthForm({ variant }: { variant: AuthFormVariant }) {
       </Form>
       <Dialog open={isLoading}>
         <DialogContent className="h-[20vh] w-[20vw] flex justify-center items-center">
-          <Loader color="text-emerald-600" />
+          <Spinner color="text-emerald-600" />
         </DialogContent>
       </Dialog>
     </div>

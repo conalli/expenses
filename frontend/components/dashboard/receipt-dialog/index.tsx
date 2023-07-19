@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader } from "@/components/ui/loading/Loader";
+import { Spinner } from "@/components/ui/loading/spinner";
 import {
   Select,
   SelectContent,
@@ -24,7 +24,7 @@ import { EXPENSES_KEY } from "@/lib/query-keys";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Camera, Plus } from "lucide-react";
 import { useState } from "react";
-import { type ExpensePeriod } from "../CollectionDetails";
+import { type ExpensePeriod } from "../collection-details";
 
 type AddReceiptData = {
   collectionID: number;
@@ -158,7 +158,7 @@ export function AddReceiptDialog({
             <Plus size={24} />
             Add
             {mutation.isLoading && (
-              <Loader color="text-white" containerStyles="py-4" />
+              <Spinner color="text-white" containerStyles="py-4" />
             )}
           </Button>
           <Button
