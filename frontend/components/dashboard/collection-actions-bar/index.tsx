@@ -30,7 +30,7 @@ export default function CollectionActionsBar({
         collectionName={selectedCollection.name}
         createdAt={selectedCollection.created_at}
       />
-      <span className="text-stone-700/20 px-4">|</span>
+      <span className="text-stone-700/25 px-4">|</span>
       <h2 className="text-lg text-stone-700 font-bold pr-4">Actions:</h2>
       <AddExpenseDialog
         user={user}
