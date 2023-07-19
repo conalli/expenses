@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
+import { useDialog } from "@/hooks/use-dialog";
 import { Category, Collection, UserWithToken } from "@/lib/api/models";
 import { apiURL } from "@/lib/api/url";
 import { EXPENSES_KEY } from "@/lib/query-keys";
@@ -61,7 +62,7 @@ export function AddReceiptDialog({
   collection: Collection;
   categories: Category[];
 }) {
-  const [open, setOpen] = useState(false);
+  const { open, setOpen, type } = useDialog();
   const [file, setFile] = useState<File>();
   const [selectedCategory, setSelectedCategory] = useState<string>();
   const { toast } = useToast();
@@ -83,10 +84,10 @@ export function AddReceiptDialog({
         expensePeriod,
         user.token,
       ]);
-      setOpen(false);
+      setOpen(false, null);
     },
     onSuccess: () => {
-      setOpen(false);
+      setOpen(false, null);
     },
     onError: () => {
       toast({
@@ -97,12 +98,15 @@ export function AddReceiptDialog({
     },
   });
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open && type === "add-receipt"}
+      onOpenChange={(open) => setOpen(open, "add-receipt")}
+    >
       <DialogTrigger>
         <div className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background h-10 py-2 px-4 bg-primary text-primary-foreground hover:bg-primary/90">
           <span className="flex gap-2 items-center">
             <Camera size={24} />
-            Add By Receipt
+            Add Receipt
           </span>
         </div>
       </DialogTrigger>
@@ -163,7 +167,7 @@ export function AddReceiptDialog({
           </Button>
           <Button
             disabled={mutation.isLoading}
-            onClick={() => setOpen(false)}
+            onClick={() => setOpen(false, null)}
             className="w-full"
           >
             Cancel

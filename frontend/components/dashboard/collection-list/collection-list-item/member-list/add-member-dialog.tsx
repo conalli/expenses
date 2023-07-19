@@ -58,8 +58,8 @@ export function AddMemberDialog({
       <DialogTrigger
         className={
           isSelected
-            ? "text-emerald-500 hover:text-emerald-500/90 rounded  inline-block"
-            : " hidden "
+            ? "text-emerald-500 hover:text-emerald-500/90 rounded inline-block"
+            : "invisible"
         }
       >
         <PlusCircle size={20} />

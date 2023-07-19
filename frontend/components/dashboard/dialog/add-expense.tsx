@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/form";
 import { Spinner } from "@/components/ui/loading/spinner";
 import { useToast } from "@/components/ui/use-toast";
+import { useDialog } from "@/hooks/use-dialog";
 import {
   Category,
   Collection,
@@ -23,7 +24,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { Plus } from "lucide-react";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "../../ui/button";
@@ -119,20 +119,22 @@ const defaultFields = (userID: number, collectionID: number) => ({
   created_by_id: userID,
 });
 
+type AddExpenseDialogProps = {
+  user: UserWithToken;
+  expensePeriod: ExpensePeriod;
+  collection: Collection;
+  categories: Category[];
+  currencies: Currency[];
+};
+
 export function AddExpenseDialog({
   user,
   expensePeriod,
   collection,
   categories,
   currencies,
-}: {
-  user: UserWithToken;
-  expensePeriod: ExpensePeriod;
-  collection: Collection;
-  categories: Category[];
-  currencies: Currency[];
-}) {
-  const [open, setOpen] = useState(false);
+}: AddExpenseDialogProps) {
+  const { open, setOpen, type } = useDialog();
   const form = useForm<AddExpenseRequest>({
     resolver: zodResolver(schema),
     defaultValues: defaultFields(user.id, collection.id),
@@ -159,7 +161,7 @@ export function AddExpenseDialog({
     },
     onSuccess: () => {
       form.reset(defaultFields(user.id, collection.id));
-      setOpen(false);
+      setOpen(false, null);
     },
     onError: () => {
       toast({
@@ -170,12 +172,15 @@ export function AddExpenseDialog({
     },
   });
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open && type === "add-expense"}
+      onOpenChange={(open) => setOpen(open, "add-expense")}
+    >
       <DialogTrigger>
         <div className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background h-10 py-2 px-4 text-primary-foreground hover:bg-emerald-600/90 bg-emerald-600">
           <span className="flex gap-2 items-center">
             <Plus size={24} />
-            Add Expense
+            Expense
           </span>
         </div>
       </DialogTrigger>
@@ -367,7 +372,7 @@ export function AddExpenseDialog({
                 type="button"
                 onClick={() => {
                   form.reset(defaultFields(user.id, collection.id));
-                  setOpen(false);
+                  setOpen(false, null);
                 }}
                 className="w-full"
               >

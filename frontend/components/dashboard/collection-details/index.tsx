@@ -28,11 +28,6 @@ const getGroupExpenses = (token: string, groupID: number, params = "") => {
   };
 };
 
-const createdDate = (createdDate: string): string => {
-  const sinceDate = new Date(createdDate);
-  return new Intl.DateTimeFormat("ja-JP").format(sinceDate);
-};
-
 export type ExpensePeriod = "month" | "year" | "" | undefined;
 
 const expensePeriodToString = (period: ExpensePeriod): string => {
@@ -99,12 +94,6 @@ export function CollectionDetails({
   return (
     <>
       <div className="py-2 flex items-center">
-        <h1 className="inline text-2xl font-bold py-4 grow">
-          {collection.name}
-        </h1>
-        <p className="inline px-4 text-sm text-muted-foreground">
-          created: {createdDate(collection.created_at)}
-        </p>
         <Select onValueChange={handlePeriodSelect}>
           <SelectTrigger>
             <SelectValue placeholder={`This month - ${currentMonth}`} />

@@ -1,13 +1,12 @@
 "use client";
 
 import { AddCollectionForm } from "@/components/dashboard/add-collection-form";
+import CollectionActionsBar from "@/components/dashboard/collection-actions-bar";
 import {
   CollectionDetails,
   ExpensePeriod,
 } from "@/components/dashboard/collection-details";
 import { CollectionList } from "@/components/dashboard/collection-list";
-import { AddExpenseDialog } from "@/components/dashboard/expense-dialog";
-import { AddReceiptDialog } from "@/components/dashboard/receipt-dialog";
 import { Spinner } from "@/components/ui/loading/spinner";
 import { useToast } from "@/components/ui/use-toast";
 import { useUser } from "@/hooks/use-user";
@@ -111,31 +110,16 @@ export default function Dashboard() {
         </div>
         <div className="row-start-1 row-span-1 col-start-3 col-span-8">
           {selectedCollection && categories.data && currencies.data && (
-            <div className="flex gap-2 items-center py-4 px-8 bg-stone-50 border-b-2">
-              <h2 className="text-xl text-stone-700 font-bold">
-                {selectedCollection.name.toUpperCase()}
-              </h2>
-              <span className="text-stone-700/20 px-4">|</span>
-              <h2 className="text-xl text-stone-700 font-bold pr-4">
-                Actions:
-              </h2>
-              <AddExpenseDialog
-                user={user}
-                expensePeriod={expensePeriod}
-                collection={selectedCollection}
-                categories={categories.data}
-                currencies={currencies.data}
-              />
-              <AddReceiptDialog
-                user={user}
-                expensePeriod={expensePeriod}
-                collection={selectedCollection}
-                categories={categories.data}
-              />
-            </div>
+            <CollectionActionsBar
+              user={user}
+              selectedCollection={selectedCollection}
+              categories={categories.data}
+              currencies={currencies.data}
+              expensePeriod={expensePeriod}
+            />
           )}
         </div>
-        <div className="row-start-2 col-start-5 col-span-4 pb-8">
+        <div className="row-start-2 col-start-4 col-span-6 pt-4 pb-8">
           {selectedCollection && (
             <CollectionDetails
               collection={selectedCollection}
