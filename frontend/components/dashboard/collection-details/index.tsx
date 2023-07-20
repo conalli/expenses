@@ -1,17 +1,18 @@
-import { apiURL } from "@/lib/api/url";
-import { EXPENSES_KEY } from "@/lib/query-keys";
-import { useQuery } from "@tanstack/react-query";
-import { Collection, Expense, UserWithToken } from "../../../lib/api/models";
-import { Spinner } from "../../ui/loading/spinner";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../ui/select";
-import { ExpenseTable } from "./expense-table";
-import { Placeholder } from "./expense-table/placeholder";
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Collection, Expense, UserWithToken } from "@/lib/api/models";
+import { apiURL } from "@/lib/api/url";
+import { EXPENSES_KEY } from "@/lib/query-keys";
+import { useQuery } from "@tanstack/react-query";
+import { BarChart2, Table } from "lucide-react";
+import DataTab from "./data-tab";
+import TableTab from "./table-tab";
 
 const getGroupExpenses = (token: string, groupID: number, params = "") => {
   return async (): Promise<Expense[]> => {
@@ -92,10 +93,18 @@ export function CollectionDetails({
   };
 
   return (
-    <>
-      <div className="py-2 flex items-center">
+    <Tabs defaultValue="table" className="flex flex-col gap-3">
+      <div className="flex items-center gap-6 w-1/2">
+        <TabsList>
+          <TabsTrigger value="table">
+            <Table />
+          </TabsTrigger>
+          <TabsTrigger value="data">
+            <BarChart2 />
+          </TabsTrigger>
+        </TabsList>
         <Select onValueChange={handlePeriodSelect}>
-          <SelectTrigger>
+          <SelectTrigger className="w-1/2">
             <SelectValue placeholder={`This month - ${currentMonth}`} />
           </SelectTrigger>
           <SelectContent>
@@ -105,16 +114,18 @@ export function CollectionDetails({
           </SelectContent>
         </Select>
       </div>
-      {isLoading && <Spinner />}
-      {expenses && expenses.length > 0 ? (
-        <ExpenseTable
-          token={user.token}
+      <TabsContent value="table">
+        <TableTab
+          user={user}
+          collection={collection}
           expenses={expenses}
-          expensePeriod={expensePeriod ?? ""}
+          isLoading={isLoading}
+          expensePeriod={expensePeriod}
         />
-      ) : (
-        <Placeholder user={user} collection={collection} />
-      )}
-    </>
+      </TabsContent>
+      <TabsContent value="data">
+        <DataTab expenses={expenses} isLoading={isLoading} />
+      </TabsContent>
+    </Tabs>
   );
 }

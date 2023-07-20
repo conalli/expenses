@@ -2,15 +2,14 @@ import { DataTable } from "@/components/ui/data-table";
 import { Collection, Expense, User } from "@/lib/api/models";
 import { columns } from "./expense-column";
 
-type PlaceholderProps = {
+type TablePlaceholderData = Expense & { token: string; expensePeriod: string };
+
+type TablePlaceholderProps = {
   user: User;
   collection: Collection;
 };
-
-type PlaceholderData = Expense & { token: string; expensePeriod: string };
-
-export function Placeholder({ user, collection }: PlaceholderProps) {
-  const placeholderExpenses: PlaceholderData[] = [
+export function TablePlaceholder({ user, collection }: TablePlaceholderProps) {
+  const placeholderExpenses: TablePlaceholderData[] = [
     {
       token: "",
       expensePeriod: "1",
