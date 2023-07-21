@@ -100,7 +100,7 @@ export function CollectionDetails({
       onValueChange={(v) => {
         setTab(v as "table" | "data");
         if (v === "data") {
-          setExpensePeriod("");
+          setExpensePeriod("year");
         }
       }}
       className="flex flex-col gap-3"
