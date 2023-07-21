@@ -70,16 +70,19 @@ export function ExpenseData({ expenses }: { expenses: Expense[] }) {
   }, [] as Currency[]);
   const [selectedCurrency, setSelectedCurrency] = useState(currencies[0]);
   const now = new Date();
-  const yearlyTotal = expenses
-    .filter((e) => e.currency.id === selectedCurrency?.id)
-    .filter((e) => new Date(e.date).getFullYear() === now.getFullYear());
-  const monthlyTotal = expenses
-    .filter((e) => e.currency.id === selectedCurrency?.id)
-    .filter((e) => new Date(e.date).getMonth() === now.getMonth());
-  const lastFive = expenses
-    .filter((e) => e.currency.id === selectedCurrency?.id)
-    .reverse()
-    .slice(0, 5);
+
+  const yearlyTotal = expenses.filter(
+    (e) =>
+      e.currency.id === selectedCurrency?.id &&
+      new Date(e.date).getFullYear() === now.getFullYear()
+  );
+
+  const monthlyTotal = expenses.filter(
+    (e) =>
+      e.currency.id === selectedCurrency?.id &&
+      new Date(e.date).getMonth() === now.getMonth()
+  );
+
   const monthlyExpenses = expenses
     .filter((e) => e.currency.id === selectedCurrency?.id)
     .reduce((prev, curr) => {
@@ -90,22 +93,6 @@ export function ExpenseData({ expenses }: { expenses: Expense[] }) {
 
   const monthlyAverage =
     monthlyExpenses.reduce((prev, curr) => prev + curr.amount, 0) / 12;
-
-  const categoryTotals = expenses
-    .filter((e) => e.currency.id === selectedCurrency?.id)
-    .reduce((prev, curr) => {
-      const category = prev.find((p) => p.category === curr.category.title);
-      if (category) {
-        category.amount += curr.amount / 10 ** curr.currency.decimals;
-        return prev;
-      }
-      prev.push({
-        category: curr.category.title,
-        currency: curr.currency,
-        amount: curr.amount / 10 ** curr.currency.decimals,
-      });
-      return prev;
-    }, [] as CategoryCurrencyAmount[]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -136,14 +123,18 @@ export function ExpenseData({ expenses }: { expenses: Expense[] }) {
             <CardTitle className="text-slate-700/90">Yearly Total</CardTitle>
           </CardHeader>
           <CardContent>
-            {calcExpenseTotal(yearlyTotal).map((amt) => (
-              <p className="text-xl font-bold" key={"year" + amt.currency.id}>
-                {new Intl.NumberFormat("ja-JP", {
-                  style: "currency",
-                  currency: amt.currency.name,
-                }).format(amt.amount)}
-              </p>
-            ))}
+            {yearlyTotal.length ? (
+              calcExpenseTotal(yearlyTotal).map((amt) => (
+                <p className="text-xl font-bold" key={"year" + amt.currency.id}>
+                  {new Intl.NumberFormat("ja-JP", {
+                    style: "currency",
+                    currency: amt.currency.name,
+                  }).format(amt.amount)}
+                </p>
+              ))
+            ) : (
+              <p className="text-xl font-bold">N/A</p>
+            )}
           </CardContent>
         </Card>
         <Card className="grow">
@@ -152,27 +143,40 @@ export function ExpenseData({ expenses }: { expenses: Expense[] }) {
           </CardHeader>
           <CardContent>
             <p className="text-xl font-bold" key={"month" + monthlyAverage}>
-              {selectedCurrency &&
-                new Intl.NumberFormat("ja-JP", {
-                  style: "currency",
-                  currency: selectedCurrency.name,
-                }).format(monthlyAverage)}
+              {selectedCurrency
+                ? new Intl.NumberFormat("ja-JP", {
+                    style: "currency",
+                    currency: selectedCurrency.name,
+                  }).format(monthlyAverage)
+                : "N/A"}
             </p>
           </CardContent>
         </Card>
         <Card className="grow">
           <CardHeader>
-            <CardTitle className="text-slate-700/90">Monthly Total</CardTitle>
+            <CardTitle className="text-slate-700/90 flex items-center">
+              Monthly Total &nbsp;
+              <p className="text-sm text-slate-700/50">
+                ({now.toLocaleString("en-GB", { month: "long" })})
+              </p>
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            {calcExpenseTotal(monthlyTotal).map((amt) => (
-              <p className="text-xl font-bold" key={"month" + amt.currency.id}>
-                {new Intl.NumberFormat("ja-JP", {
-                  style: "currency",
-                  currency: amt.currency.name,
-                }).format(amt.amount)}
-              </p>
-            ))}
+            {monthlyTotal.length ? (
+              calcExpenseTotal(monthlyTotal).map((amt) => (
+                <p
+                  className="text-xl font-bold"
+                  key={"month" + amt.currency.id}
+                >
+                  {new Intl.NumberFormat("ja-JP", {
+                    style: "currency",
+                    currency: amt.currency.name,
+                  }).format(amt.amount)}
+                </p>
+              ))
+            ) : (
+              <p className="text-xl font-bold">N/A</p>
+            )}
           </CardContent>
         </Card>
       </div>
