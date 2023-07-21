@@ -11,6 +11,7 @@ import { apiURL } from "@/lib/api/url";
 import { EXPENSES_KEY } from "@/lib/query-keys";
 import { useQuery } from "@tanstack/react-query";
 import { BarChart2, Table } from "lucide-react";
+import { useState } from "react";
 import DataTab from "./data-tab";
 import TableTab from "./table-tab";
 
@@ -64,6 +65,7 @@ export function CollectionDetails({
   expensePeriod: ExpensePeriod;
   setExpensePeriod: (period: ExpensePeriod) => void;
 }) {
+  const [tab, setTab] = useState<"table" | "data">("table");
   const { data: expenses, isLoading } = useQuery({
     queryKey: [EXPENSES_KEY, collection.id, expensePeriod, user.token],
     queryFn: getGroupExpenses(
@@ -93,7 +95,16 @@ export function CollectionDetails({
   };
 
   return (
-    <Tabs defaultValue="table" className="flex flex-col gap-3">
+    <Tabs
+      defaultValue={tab}
+      onValueChange={(v) => {
+        setTab(v as "table" | "data");
+        if (v === "data") {
+          setExpensePeriod("");
+        }
+      }}
+      className="flex flex-col gap-3"
+    >
       <div className="flex items-center gap-6 w-1/2">
         <TabsList>
           <TabsTrigger value="table">
@@ -103,7 +114,11 @@ export function CollectionDetails({
             <BarChart2 />
           </TabsTrigger>
         </TabsList>
-        <Select onValueChange={handlePeriodSelect}>
+        <Select
+          disabled={tab === "data"}
+          value={expensePeriod}
+          onValueChange={handlePeriodSelect}
+        >
           <SelectTrigger className="w-1/2">
             <SelectValue placeholder={`This month - ${currentMonth}`} />
           </SelectTrigger>
