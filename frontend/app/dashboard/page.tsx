@@ -15,17 +15,17 @@ import { useEffect, useState } from "react";
 export default function Dashboard() {
   const { user, collections } = useUser();
   const [selectedCollection, setSelectedCollection] =
-    useState<Collection | null>(null);
+    useState<Collection | null>(user?.collections[0] ?? null);
   const [expensePeriod, setExpensePeriod] = useState<ExpensePeriod>("month");
   const handlePeriodChange = (period: ExpensePeriod) => {
     setExpensePeriod(period);
   };
 
   useEffect(() => {
-    if (user && user.collections.length >= 1) {
+    if (user && user.collections.length >= 1 && selectedCollection === null) {
       return setSelectedCollection(user.collections[0]);
     }
-  }, [user]);
+  }, [selectedCollection, user]);
 
   const currencies = useCurrency(user);
 
