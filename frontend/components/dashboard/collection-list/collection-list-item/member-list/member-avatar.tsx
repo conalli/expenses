@@ -6,7 +6,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { CollectionMember } from "@/lib/api/models";
-import { stringToColor } from "@/lib/avatar";
+import { stringToColor } from "@/lib/styles";
 
 export function CollectionMemberAvatar({
   member,

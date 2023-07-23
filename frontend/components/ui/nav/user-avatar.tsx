@@ -1,7 +1,7 @@
 "use client";
 
 import { User } from "@/lib/api/models";
-import { stringToColor } from "@/lib/avatar";
+import { stringToColor } from "@/lib/styles";
 import { Avatar, AvatarFallback } from "../avatar";
 import { Button } from "../button";
 import {

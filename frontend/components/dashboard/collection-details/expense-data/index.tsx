@@ -1,4 +1,10 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -7,10 +13,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Currency, Expense } from "@/lib/api/models";
+import { stringToColor } from "@/lib/styles";
 import { useState } from "react";
 import {
+  Legend,
   Line,
   LineChart,
+  Pie,
+  PieChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -27,7 +37,8 @@ type MonthlyCurrencyAmount = CurrencyAmount & {
 };
 
 type CategoryCurrencyAmount = CurrencyAmount & {
-  category: string;
+  name: string;
+  fill: string;
 };
 
 const calcExpenseTotal = (exp: Expense[]): CurrencyAmount[] => {
@@ -93,6 +104,27 @@ export function ExpenseData({ expenses }: { expenses: Expense[] }) {
 
   const monthlyAverage =
     monthlyExpenses.reduce((prev, curr) => prev + curr.amount, 0) / 12;
+
+  const lastExpenses = expenses
+    .filter((e) => e.currency.id === selectedCurrency?.id)
+    .reverse()
+    .slice(0, 3);
+
+  const categoryTotal = expenses
+    .filter((e) => e.currency.id === selectedCurrency?.id)
+    .reduce((prev, curr) => {
+      const found = prev.find((e) => e.name === curr.category.title);
+      if (found) {
+        found.amount += curr.amount / 10 ** curr.currency.decimals;
+        return prev;
+      }
+      prev.push({
+        name: curr.category.title,
+        amount: curr.amount / 10 ** curr.currency.decimals,
+        fill: stringToColor(curr.category.title),
+      } as CategoryCurrencyAmount);
+      return prev;
+    }, [] as CategoryCurrencyAmount[]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -196,6 +228,67 @@ export function ExpenseData({ expenses }: { expenses: Expense[] }) {
                 <Tooltip />
               </LineChart>
             </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </div>
+      <div className="flex gap-4">
+        <Card className="grow-[2]">
+          <CardHeader>
+            <CardTitle>Last {lastExpenses.length} Expenses</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {!categoryTotal.length ? (
+              "N/A"
+            ) : (
+              <div className="flex flex-col justify-between">
+                {lastExpenses.map((e) => (
+                  <Card key={e.id} className="flex items-center">
+                    <CardHeader className="w-1/2">
+                      <CardTitle>{e.title}</CardTitle>
+                      <CardDescription>{e.date}</CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex items-center justify-end pt-6 text-lg font-bold w-1/2">
+                      {new Intl.NumberFormat("ja-JP", {
+                        style: "currency",
+                        currency: e.currency.name,
+                      }).format(e.amount / 10 ** e.currency.decimals)}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+        <Card className="w-1/2">
+          <CardHeader>
+            <CardTitle>By Category</CardTitle>
+          </CardHeader>
+
+          <CardContent>
+            {!categoryTotal.length ? (
+              "N/A"
+            ) : (
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart height={10} width={10}>
+                  <Pie
+                    data={categoryTotal}
+                    dataKey={"amount"}
+                    label
+                    cx="50%"
+                    cy="50%"
+                  />
+                  <Tooltip
+                    formatter={(value) =>
+                      new Intl.NumberFormat("ja-JP", {
+                        style: "currency",
+                        currency: selectedCurrency?.name,
+                      }).format(Number(value))
+                    }
+                  />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            )}
           </CardContent>
         </Card>
       </div>
