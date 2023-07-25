@@ -2,18 +2,22 @@
 
 import { useUser } from "@/hooks/use-user";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "../button";
 import { UserAvatar } from "./user-avatar";
 
 export function NavLinks() {
+  const router = useRouter();
   const pathname = usePathname();
   const { user, logout } = useUser();
   return (
     <ul className="flex gap-4">
       {!user ? (
         <li>
-          <Button className="bg-emerald-600 hover:bg-emerald-600/90">
+          <Button
+            onClick={() => router.push("/signin")}
+            className="bg-emerald-600 hover:bg-emerald-600/90"
+          >
             <Link href="/signin">Sign in</Link>
           </Button>
         </li>
@@ -22,6 +26,7 @@ export function NavLinks() {
           <li>
             <Button
               disabled={pathname === "/dashboard"}
+              onClick={() => router.push("/dashboard")}
               className="bg-emerald-600 hover:bg-emerald-600/90"
             >
               <Link href="/dashboard">Dashboard</Link>

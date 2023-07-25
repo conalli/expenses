@@ -225,7 +225,14 @@ export function ExpenseData({ expenses }: { expenses: Expense[] }) {
                 <XAxis dataKey="month" />
                 <YAxis />
                 <Line type="monotone" dataKey={"amount"} stroke="#059669" />
-                <Tooltip />
+                <Tooltip
+                  formatter={(value) =>
+                    new Intl.NumberFormat("ja-JP", {
+                      style: "currency",
+                      currency: selectedCurrency?.name,
+                    }).format(Number(value))
+                  }
+                />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>

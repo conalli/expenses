@@ -18,7 +18,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Dialog, DialogContent } from "../dialog";
+import { AlertDialog, AlertDialogContent } from "../alert-dialog";
 import { Spinner } from "../loading/spinner";
 import { useToast } from "../use-toast";
 
@@ -171,11 +171,11 @@ export default function AuthForm({ variant }: { variant: AuthFormVariant }) {
           <Button type="submit">{variant}</Button>
         </form>
       </Form>
-      <Dialog open={isLoading}>
-        <DialogContent className="h-[20vh] w-[20vw] flex justify-center items-center">
+      <AlertDialog open={isLoading}>
+        <AlertDialogContent className="h-[20vh] w-[20vw] flex justify-center items-center">
           <Spinner color="text-emerald-600" />
-        </DialogContent>
-      </Dialog>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
