@@ -9,7 +9,7 @@ from werkzeug import datastructures
 class ReceiptParser:
     receipt_data: str = ""
 
-    def __init__(self, file: datastructures.FileStorage, lang="jpn") -> None:
+    def __init__(self, file: datastructures.FileStorage, lang="eng+jpn") -> None:
         self.file = file
         self.lang = lang
 
