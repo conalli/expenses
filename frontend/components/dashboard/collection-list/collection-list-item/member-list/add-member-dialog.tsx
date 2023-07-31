@@ -104,7 +104,7 @@ export function AddMemberDialog({
         />
         <div className="flex justify-between gap-2">
           <Button
-            className="w-full bg-emerald-600 hover:bg-emerald-600/90"
+            className="w-full flex gap-4 bg-emerald-600 hover:bg-emerald-600/90"
             disabled={memberUsername.length < 3 || mutation.isLoading}
             onClick={() => mutation.mutate(memberUsername)}
           >
