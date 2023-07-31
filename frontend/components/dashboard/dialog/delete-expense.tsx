@@ -101,7 +101,7 @@ export function DeleteExpenseDialog({
       <div className="flex justify-between gap-2">
         <Button
           variant="destructive"
-          className="w-full"
+          className="w-full flex gap-4"
           disabled={DELETE_EXPENSE_TEXT !== deleteText || mutation.isLoading}
           onClick={() => mutation.mutate()}
         >
