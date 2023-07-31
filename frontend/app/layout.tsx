@@ -1,5 +1,6 @@
 import { Providers } from "@/components/providers";
 import { NavLinks } from "@/components/ui/nav/links";
+import { Toaster } from "@/components/ui/toaster";
 import "@/styles/globals.css";
 import { Inter } from "next/font/google";
 import Link from "next/link";
@@ -28,6 +29,7 @@ export default function RootLayout({
             <NavLinks />
           </nav>
           {children}
+          <Toaster />
         </Providers>
       </body>
     </html>

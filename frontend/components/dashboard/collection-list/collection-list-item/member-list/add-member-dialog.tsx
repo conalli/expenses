@@ -8,6 +8,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/loading/spinner";
+import { useToast } from "@/components/ui/use-toast";
 import { Collection } from "@/lib/api/models";
 import { apiURL } from "@/lib/api/url";
 import { COLLECTIONS_KEY } from "@/lib/query-keys";
@@ -24,7 +26,16 @@ const addMemberToCollection = (token: string, collectionID: number) => {
       },
       body: JSON.stringify({ username }),
     });
-    if (res.status >= 300) throw new Error("OMG");
+    if (res.status >= 400 && res.status < 500) {
+      const response = (await res.json()) as {
+        result: string;
+        description: string;
+      };
+      throw new Error(response.description);
+    }
+    if (res.status >= 500) {
+      throw new Error("Something has gone wrong");
+    }
     return (await res.json()) as { result: string };
   };
 };
@@ -38,6 +49,7 @@ export function AddMemberDialog({
   collection: Collection;
   isSelected: boolean;
 }) {
+  const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [memberUsername, setMemberUsername] = useState("");
   const queryClient = useQueryClient();
@@ -46,8 +58,17 @@ export function AddMemberDialog({
     onMutate: async () => {
       await queryClient.cancelQueries([COLLECTIONS_KEY, token]);
     },
-    onSettled: () => {
-      queryClient.invalidateQueries([COLLECTIONS_KEY, token]);
+    onSettled: async () => {
+      await queryClient.invalidateQueries([COLLECTIONS_KEY, token]);
+    },
+    onError: async (err) => {
+      console.error(err);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description:
+          "could not add user to collection, please check the username is correct",
+      });
     },
     onSuccess: () => {
       setOpen(false);
@@ -84,10 +105,13 @@ export function AddMemberDialog({
         <div className="flex justify-between gap-2">
           <Button
             className="w-full bg-emerald-600 hover:bg-emerald-600/90"
-            disabled={memberUsername.length < 3}
+            disabled={memberUsername.length < 3 || mutation.isLoading}
             onClick={() => mutation.mutate(memberUsername)}
           >
             Invite
+            {mutation.isLoading && (
+              <Spinner color="text-white" containerStyles="py-4" />
+            )}
           </Button>
           <Button onClick={() => setOpen(false)} className="w-full">
             Cancel

@@ -67,12 +67,13 @@ class GroupViewSet(viewsets.ModelViewSet):
     def add_member(self, request: Request, pk: int) -> Response:
         """ /group/{id}/members POST adds member to group by email """
         data = JSONParser().parse(request)
-        user = User.objects.get(username=data.get("username"))
-        group = Group.objects.get(pk=pk)
-        if user == None:
-            return Response({"result": "error", "description": f"user with email {data.email} does not exist"})
-        if group == None:
-            return Response({"result": "error", "description": f"group does not exist"})
+        try:
+            user = User.objects.get(username=data.get("username"))
+            group = Group.objects.get(pk=pk)
+            if group == None:
+                return Response({"result": "error", "description": f"group does not exist"}, status=status.HTTP_404_NOT_FOUND)
+        except User.DoesNotExist:
+            return Response({"result": "error", "description": f"user with name {data.get('username')} does not exist"}, status=status.HTTP_404_NOT_FOUND)
         GroupMember.objects.create(user=user, group=group)
         return Response({"result": "success"})
 

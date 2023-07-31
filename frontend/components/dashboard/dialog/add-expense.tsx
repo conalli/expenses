@@ -374,6 +374,7 @@ export function AddExpenseDialog({
             <div className="flex justify-between gap-2 pt-4">
               <Button
                 type="submit"
+                disabled={mutation.isLoading}
                 className="flex gap-2 w-full bg-emerald-600 hover:bg-emerald-600/90"
               >
                 <Plus size={24} />
@@ -384,6 +385,7 @@ export function AddExpenseDialog({
               </Button>
               <Button
                 type="button"
+                disabled={mutation.isLoading}
                 onClick={() => {
                   form.reset(defaultFields(user.id, collection.id));
                   setOpen(false);
