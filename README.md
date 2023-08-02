@@ -45,8 +45,5 @@ This should allow you to view the output from celery and celery beat.
 
 - [ ] Add styling to emails.
 
-- [x] Frontend (In Progress)
-
 - [x] Basic receipt text recognition.
 
-- [ ] More advanced receipt text recognition.
